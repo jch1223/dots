@@ -79,7 +79,7 @@
         "dependencies": [
           2
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -87,7 +87,7 @@
             "description": "Select 컴포넌트의 트리거 요소에 대한 기본 스타일과, 팝업이 열렸을 때(open), 그리고 비활성화되었을 때(disabled)의 시각적 스타일을 Tailwind CSS를 사용하여 적용합니다.",
             "dependencies": [],
             "details": "data-state 속성(open/closed)과 data-disabled 속성을 타겟팅하는 Tailwind CSS의 data-* variant를 활용합니다. 비활성화 시에는 opacity-50과 cursor-not-allowed 클래스를 적용합니다.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": "Storybook에서 disabled prop을 토글하여 비활성화 스타일을 확인합니다. 트리거를 클릭하여 data-state가 'open'으로 변경될 때 스타일이 올바르게 적용되는지 시각적으로 검증합니다."
           },
           {
@@ -96,7 +96,7 @@
             "description": "옵션 목록을 감싸는 SelectPopup 컨테이너와 실제 목록인 SelectList의 레이아웃, 배경, 그림자 등 전반적인 스타일을 구현합니다.",
             "dependencies": [],
             "details": "SelectPopup에 z-index, 그림자(shadow-md), 둥근 모서리(rounded-md) 등의 스타일을 적용합니다. SelectList에는 스크롤이 필요할 경우를 대비해 max-height와 overflow-y-auto 클래스를 추가합니다.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Storybook에서 Select 컴포넌트를 열었을 때 팝업의 위치, 크기, 배경, 그림자 등이 디자인 시안에 맞게 렌더링되는지 확인합니다. 옵션 목록이 길 경우 스크롤이 정상적으로 동작하는지 테스트합니다."
           },
           {
@@ -105,7 +105,7 @@
             "description": "각 개별 옵션 아이템의 기본 스타일과 마우스 호버 상태, 그리고 키보드 네비게이션으로 하이라이트된 상태(highlighted)의 스타일을 적용합니다.",
             "dependencies": [],
             "details": "data-highlighted 속성을 타겟팅하여 하이라이트 상태의 배경색을 변경합니다. 일반적인 호버 상태(hover:)와 data-highlighted 상태의 스타일이 일관되도록 구현합니다.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Storybook에서 팝업을 열고 각 옵션에 마우스를 올렸을 때 호버 스타일이 적용되는지 확인합니다. 키보드 화살표 키로 옵션을 탐색할 때 data-highlighted 속성이 적용된 요소의 스타일이 올바르게 변경되는지 시각적으로 검증합니다."
           }
         ]
@@ -457,7 +457,7 @@
     ],
     "metadata": {
       "created": "2025-11-19T07:27:43.446Z",
-      "updated": "2025-11-19T08:18:27.826Z",
+      "updated": "2025-11-19T10:13:22.931Z",
       "description": "Tasks for master context"
     }
   }

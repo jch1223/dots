@@ -17,6 +17,13 @@ const meta = {
   component: Select,
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component: `헤드리스 컴포넌트로 구현하여 유연성을 높였습니다.
+디자인시스템이 정해지지 않아 스타일은 상위에서 진행하였습니다.
+디자인 시스템이 정의되면 select 컴포넌트 내부에 스타일을 진행합니다.`,
+      },
+    },
   },
   argTypes: {
     value: {
