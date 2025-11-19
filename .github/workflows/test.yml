@@ -53,6 +53,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Playwright 브라우저 설치 (스토리북 테스트에 필요)
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
       # 스토리북 테스트 실행
       - name: Run Storybook tests
         run: npm run test:storybook
