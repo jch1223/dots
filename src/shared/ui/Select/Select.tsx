@@ -122,10 +122,15 @@ export function SelectList({ children, ...props }: SelectListProps) {
 }
 
 // SelectOption
-export function SelectOption({ option, onClick, ...props }: SelectOptionProps) {
+export function SelectOption({ option, onClick, disabled, ...props }: SelectOptionProps) {
   const { value, onChange, setIsOpen } = useSelect();
 
   const handleClick = (event: React.MouseEvent<HTMLLIElement>) => {
+    if (disabled) {
+      event.preventDefault();
+      return;
+    }
+
     onChange?.(option.value);
     setIsOpen(false);
     onClick?.(event);
@@ -134,7 +139,13 @@ export function SelectOption({ option, onClick, ...props }: SelectOptionProps) {
   const isSelected = value === option.value;
 
   return (
-    <li onClick={handleClick} data-selected={isSelected} {...props}>
+    <li
+      onClick={handleClick}
+      data-selected={isSelected}
+      data-disabled={disabled ? 'true' : undefined}
+      aria-disabled={disabled}
+      {...props}
+    >
       {option.label}
     </li>
   );

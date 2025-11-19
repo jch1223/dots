@@ -71,7 +71,8 @@ const DefaultSelect: Story['render'] = (args) => {
                 <SelectOption
                   key={option.value}
                   option={option}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  disabled={option.disabled}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
               ))}
             </SelectList>
@@ -117,5 +118,18 @@ export const Disabled: Story = {
       { value: 'option3', label: '옵션 3' },
     ],
     disabled: true,
+  } as Story['args'],
+};
+
+export const WithDisabledOption: Story = {
+  render: DefaultSelect,
+  args: {
+    value: undefined,
+    options: [
+      { value: 'option1', label: '옵션 1' },
+      { value: 'option2', label: '옵션 2', disabled: true },
+      { value: 'option3', label: '옵션 3' },
+    ],
+    disabled: false,
   } as Story['args'],
 };

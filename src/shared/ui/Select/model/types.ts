@@ -3,6 +3,7 @@ import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 export interface SelectOptionType<T = string | number> {
   value: T;
   label: string;
+  disabled?: boolean;
 }
 
 export interface SelectContextValue<T = string | number> {
@@ -42,4 +43,5 @@ export interface SelectListProps extends ComponentPropsWithoutRef<'ul'> {
 
 export interface SelectOptionProps extends ComponentPropsWithoutRef<'li'> {
   option: SelectOptionType;
+  disabled?: boolean;
 }
