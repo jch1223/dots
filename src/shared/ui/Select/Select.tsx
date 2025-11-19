@@ -55,7 +55,7 @@ export function SelectLabel({ children, ...props }: SelectLabelProps) {
 }
 
 // SelectTrigger
-export function SelectTrigger({ onClick, className, id, ...props }: SelectTriggerProps) {
+export function SelectTrigger({ onClick, className, id, label, ...props }: SelectTriggerProps) {
   const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId } = useSelect();
 
   // 실제 사용되는 id 값을 계산
@@ -74,7 +74,8 @@ export function SelectTrigger({ onClick, className, id, ...props }: SelectTrigge
     onClick?.(event);
   };
 
-  const displayText = value ? value.label : '선택하세요';
+  // 표시할 텍스트 결정: value가 있으면 value.label, 없으면 label prop 또는 기본값
+  const displayText = value ? value.label : label || '선택하세요';
 
   return (
     <button

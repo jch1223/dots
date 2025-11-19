@@ -63,9 +63,11 @@ const DefaultSelect: Story['render'] = (args) => {
         options={typedArgs.options}
         disabled={typedArgs.disabled}
       >
-        {typedArgs.label && <SelectLabel>{typedArgs.label}</SelectLabel>}
         <div className="relative">
-          <SelectTrigger className="flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-state-open:border-blue-500 data-state-open:ring-2 data-state-open:ring-blue-500" />
+          <SelectTrigger
+            label={typedArgs.label}
+            className="flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-state-open:border-blue-500 data-state-open:ring-2 data-state-open:ring-blue-500"
+          />
           <SelectPopup className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
             <SelectList className="max-h-60 overflow-auto py-1">
               {typedArgs.options.map((option) => (
@@ -93,6 +95,7 @@ export const Default: Story = {
       { value: 'option2', label: '옵션 2' },
       { value: 'option3', label: '옵션 3' },
     ],
+    label: '라벨입니다',
   } as Story['args'],
 };
 
@@ -105,7 +108,7 @@ export const WithLabel: Story = {
       { value: 'option2', label: '옵션 2' },
       { value: 'option3', label: '옵션 3' },
     ],
-    label: '선택하세요',
+    label: '라벨입니다',
   } as Story['args'],
 };
 
@@ -198,7 +201,14 @@ export const WithGroups: Story = {
   render: GroupSelect,
   args: {
     value: undefined,
-    options: [],
+    options: [
+      { value: 'apple', label: '사과' },
+      { value: 'banana', label: '바나나' },
+      { value: 'orange', label: '오렌지' },
+      { value: 'carrot', label: '당근' },
+      { value: 'tomato', label: '토마토' },
+      { value: 'lettuce', label: '상추' },
+    ],
     children: null,
-  },
+  } as Story['args'],
 };

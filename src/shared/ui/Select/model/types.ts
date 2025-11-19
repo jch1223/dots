@@ -32,7 +32,9 @@ export interface SelectLabelProps extends ComponentPropsWithoutRef<'label'> {
   children: ReactNode;
 }
 
-export type SelectTriggerProps = ComponentPropsWithoutRef<'button'>;
+export interface SelectTriggerProps extends ComponentPropsWithoutRef<'button'> {
+  label?: string;
+}
 
 export interface SelectPopupProps extends ComponentPropsWithoutRef<'div'> {
   children: ReactNode;
@@ -41,9 +43,8 @@ export interface SelectPopupProps extends ComponentPropsWithoutRef<'div'> {
 export interface SelectListProps extends ComponentPropsWithoutRef<'ul'> {
   children?: ReactNode;
 }
-
-export interface SelectOptionProps extends ComponentPropsWithoutRef<'li'> {
-  option: SelectOptionType;
+export interface SelectOptionProps<T = string | number> extends ComponentPropsWithoutRef<'li'> {
+  option: SelectOptionType<T>;
   disabled?: boolean;
 }
 
