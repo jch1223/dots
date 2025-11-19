@@ -45,19 +45,10 @@ export function Select<T = string | number>({
 
 // SelectLabel
 export function SelectLabel({ children, ...props }: SelectLabelProps) {
-  const { disabled, triggerId } = useSelect();
-
-  const handleClick = (event: React.MouseEvent<HTMLLabelElement>) => {
-    // htmlFor로 연결된 button의 클릭 이벤트가 자동으로 발생하지만,
-    // disabled 상태일 때는 이벤트가 발생하지 않으므로 명시적으로 처리
-    if (disabled) {
-      event.preventDefault();
-      return;
-    }
-  };
+  const { triggerId } = useSelect();
 
   return (
-    <label htmlFor={triggerId} onClick={handleClick} {...props}>
+    <label htmlFor={triggerId} {...props}>
       {children}
     </label>
   );
@@ -129,7 +120,7 @@ export function SelectList({ children, ...props }: SelectListProps) {
   return (
     <ul {...props}>
       {options.map((option) => (
-        <SelectOption key={option.value} option={option} disabled={option.disabled} />
+        <SelectOption key={String(option.value)} option={option} disabled={option.disabled} />
       ))}
     </ul>
   );
