@@ -23,3 +23,12 @@ node_modules/
 
 # OS specific
 .DS_Store
+
+# Build outputs
+dist
+storybook-static
+.storybook-static
+
+# Cache directories
+node_modules/.cache
+node_modules/.vite

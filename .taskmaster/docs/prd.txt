@@ -1,0 +1,320 @@
+<context>
+# Overview  
+디자인 시스템에 맞는 Select와 Modal 컴포넌트를 개발합니다. 이 컴포넌트들은 재사용 가능하고 접근성을 준수하며, Storybook을 통해 문서화되고 테스트 가능한 형태로 구현됩니다. 헤드리스 라이브러리 없이 순수 React와 TypeScript로 구현하여 완전한 제어권을 확보합니다.
+
+# Core Features  
+
+## Select 컴포넌트
+- **기능**: label + trigger + popup(list) 구조의 드롭다운 선택 컴포넌트
+- **중요성**: 폼 입력과 옵션 선택을 위한 핵심 UI 컴포넌트
+- **작동 방식**: 
+  - 옵션 선택 시 trigger에 반영
+  - 키보드 네비게이션(↑↓, Enter, Esc) 지원
+  - Focus 관리 및 ARIA 속성 준수
+  - Controlled 모드 지원 (value는 외부 상태로 제어, popup 열림/닫힘은 내부 상태로 관리)
+
+## Modal 컴포넌트
+- **기능**: 오버레이 기반의 모달 다이얼로그 컴포넌트
+- **중요성**: 사용자 주의를 집중시키고 중요한 작업을 수행하기 위한 필수 UI 패턴
+- **작동 방식**:
+  - Open/close 제어
+  - ESC 키 및 backdrop 클릭으로 닫기
+  - Focus trap 및 focus management
+  - ARIA 속성 준수
+
+# User Experience  
+
+## 사용자 페르소나
+- **개발자**: 컴포넌트를 사용하여 폼과 인터랙션을 구현하는 프론트엔드 개발자
+- **최종 사용자**: 웹 애플리케이션을 사용하는 일반 사용자
+
+## 주요 사용자 플로우
+1. **Select 사용 플로우**:
+   - Trigger 클릭 → Popup 열림
+   - 키보드 또는 마우스로 옵션 선택
+   - 선택된 값이 trigger에 표시됨
+   - ESC 키로 닫기
+
+2. **Modal 사용 플로우**:
+   - Modal 열기
+   - 내용 확인/작업 수행
+   - ESC 키, backdrop 클릭, 또는 닫기 버튼으로 닫기
+
+## UI/UX 고려사항
+- Storybook에서 컴포넌트를 직접 조작 가능해야 함
+- 웹 표준과 접근성(WCAG) 준수
+- 키보드 네비게이션 완전 지원
+- 시각적 피드백 제공 (hover, focus, disabled 상태)
+</context>
+<PRD>
+# Technical Architecture  
+
+## 기술 스택
+- **프레임워크**: React 18+
+- **언어**: TypeScript
+- **스타일링**: Tailwind CSS (또는 styled-components, Emotion 등)
+- **문서화**: Storybook
+- **빌드 도구**: Vite
+- **제약사항**: 헤드리스 라이브러리 사용 불가 (headless UI, radix-ui, react-aria 등)
+
+## 시스템 컴포넌트
+
+### Select 컴포넌트 구조
+- `Select` (메인 컴포넌트)
+  - `SelectLabel` (라벨)
+  - `SelectTrigger` (트리거 버튼)
+  - `SelectPopup` (팝업 컨테이너)
+    - `SelectList` (옵션 리스트)
+      - `SelectOption` (개별 옵션)
+
+### Modal 컴포넌트 구조
+- `Modal` (메인 컴포넌트)
+  - `ModalBackdrop` (배경 오버레이)
+  - `ModalContent` (모달 콘텐츠 컨테이너)
+    - `ModalHeader` (헤더, 선택)
+    - `ModalBody` (본문)
+    - `ModalFooter` (푸터, 선택)
+
+## 데이터 모델
+
+### Select
+```typescript
+interface SelectOption<T = string | number> {
+  value: T;
+  label: string;
+}
+```
+
+### Modal
+```typescript
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  // Controlled 모드
+}
+```
+
+## APIs 및 통합
+- **Select**: value는 Controlled 모드 (외부 상태로 제어), popup 열림/닫힘은 내부 상태로 관리
+- **Modal**: isOpen은 Controlled 모드 (외부 상태로 제어)
+- **Storybook 통합**: 각 컴포넌트별 스토리 작성
+- **접근성**: ARIA 속성 자동 적용
+
+## 인프라 요구사항
+- Node.js 환경
+- Vite 개발 서버
+- Storybook 빌드 환경
+- TypeScript 컴파일러
+
+# Development Roadmap  
+
+## Phase 1: MVP - Select 컴포넌트 (필수 기능)
+
+### 필수 구현 사항
+1. **기본 구조**
+   - Label + Trigger + Popup(List) 구성
+   - 옵션 선택 시 trigger에 반영
+   - 기본 스타일링 (variant: default)
+
+2. **키보드 네비게이션**
+   - ↑↓ 화살표 키로 옵션 이동
+   - Enter 키로 선택
+   - Esc 키로 팝업 닫기
+
+3. **Focus 관리**
+   - Trigger 클릭 시 popup으로 focus 이동
+   - 키보드 네비게이션 시 focus 시각적 표시
+   - Esc 키 시 trigger로 focus 복귀
+
+4. **접근성**
+   - ARIA 속성 적용 (aria-expanded, aria-haspopup, role 등)
+   - 키보드 접근성 완전 지원
+
+5. **상태 관리**
+   - value는 Controlled 모드로 구현 (외부 상태로 제어)
+   - popup 열림/닫힘 상태는 내부에서 관리
+   - Disabled 상태 (variant: disabled)
+
+6. **Storybook 스토리**
+   - 기본 사용 예제
+   - Controlled 모드 예제
+   - Disabled 상태 예제
+
+## Phase 2: MVP - Modal 컴포넌트 (필수 기능)
+
+### 필수 구현 사항
+1. **기본 구조**
+   - Open/close 제어
+   - Backdrop 렌더링
+   - 기본 스타일링
+
+2. **인터랙션**
+   - ESC 키로 닫기
+   - Backdrop 클릭으로 닫기
+
+3. **Focus 관리**
+   - Modal 열릴 때 첫 번째 포커스 가능 요소로 focus 이동
+   - Focus trap (Tab 키로 modal 내부만 순환)
+   - Modal 닫힐 때 이전 focus 위치로 복귀
+
+4. **접근성**
+   - ARIA 속성 적용 (role="dialog", aria-modal, aria-labelledby 등)
+   - 키보드 접근성 완전 지원
+
+5. **Storybook 스토리**
+   - 기본 사용 예제
+   - Open/close 제어 예제
+
+## Phase 3: 향후 개선사항 (선택 기능)
+
+### Select 컴포넌트 개선
+1. **Disabled Option**
+   - 특정 옵션 비활성화 기능
+   - 시각적 표시 및 키보드 네비게이션에서 제외
+
+### Modal 컴포넌트 개선
+1. **애니메이션**
+   - Fade in/out 애니메이션
+   - Slide 애니메이션
+   - 커스터마이징 가능한 애니메이션 옵션
+
+## 제외 범위
+- Select: 검색(Autocomplete), multi-select, 가상 스크롤, 비동기 로딩
+- Modal: 모달을 여닫는 트리거 버튼 (Storybook에서 조작 가능하면 충분), nested modal
+
+# Logical Dependency Chain
+
+## 개발 순서
+
+### 1단계: 기반 설정 (Foundation)
+- 프로젝트 구조 설정
+- Storybook 설정
+- 기본 스타일 시스템 구축 (Tailwind 설정)
+- 공통 유틸리티 함수 (focus 관리, 키보드 이벤트 등)
+
+### 2단계: Select 컴포넌트 MVP
+- Select 기본 구조 구현 (가장 빠르게 보이는 결과물)
+- 키보드 네비게이션 구현
+- Focus 관리 구현
+- ARIA 속성 적용
+- Storybook 스토리 작성
+
+### 3단계: Modal 컴포넌트 MVP
+- Modal 기본 구조 구현
+- Focus trap 구현
+- Backdrop 및 ESC 키 처리
+- ARIA 속성 적용
+- Storybook 스토리 작성
+
+### 4단계: 개선 및 확장
+- Select: Disabled option, Grouped options
+- Modal: 애니메이션 추가
+- 공통 패턴 리팩토링
+- 문서화 보완
+
+## 원자적 작업 단위
+각 기능은 독립적으로 구현 가능하도록 설계하되, 다음 단계에서 개선할 수 있는 여지를 남깁니다:
+- 기본 기능 먼저 구현 → 점진적 개선
+- 각 컴포넌트는 독립적으로 테스트 가능
+- Storybook을 통한 시각적 검증 가능
+
+# Risks and Mitigations  
+
+## 기술적 도전 과제
+
+### 1. 헤드리스 라이브러리 사용 불가
+- **위험**: 접근성과 키보드 네비게이션을 직접 구현해야 함
+- **완화 방안**: 
+  - WAI-ARIA 가이드라인 철저히 준수
+  - 키보드 이벤트 처리 로직을 재사용 가능한 훅으로 추출
+  - 접근성 테스트 도구 활용
+
+### 2. Focus 관리 복잡성
+- **위험**: Modal의 focus trap과 Select의 focus 이동이 복잡할 수 있음
+- **완화 방안**:
+  - React의 useRef와 useEffect를 활용한 focus 관리 훅 개발
+  - 포괄적인 테스트 케이스 작성
+
+### 3. 브라우저 호환성
+- **위험**: 다양한 브라우저에서 키보드 이벤트와 focus 동작이 다를 수 있음
+- **완화 방안**:
+  - 주요 브라우저에서 테스트
+  - 폴리필 필요 시 적용
+
+## MVP 파악
+- **핵심 가치**: Select와 Modal의 기본 기능과 접근성
+- **우선순위**: 
+  1. 기본 동작 (선택, 열기/닫기)
+  2. 키보드 네비게이션
+  3. 접근성
+  4. 선택 기능 (disabled option, animation 등)
+
+## 리소스 제약
+- **시간**: MVP에 집중하여 필수 기능만 먼저 구현
+- **복잡도**: 선택 기능은 명확히 구분하여 점진적 구현
+- **테스트**: 옵션이지만 가능한 범위에서 테스트 작성
+
+# Appendix  
+
+## 연구 결과
+
+### 접근성 가이드라인
+- WAI-ARIA Authoring Practices Guide 준수
+- Select: Combobox 또는 Listbox 패턴 적용
+- Modal: Dialog 패턴 적용
+
+### 키보드 네비게이션 표준
+- Select: ARIA 1.2 Combobox 또는 Listbox 키보드 인터랙션 패턴
+- Modal: ESC 키, Tab 순환, Shift+Tab 역순환
+
+## 기술 사양
+
+### Select 컴포넌트 상세 사양
+
+#### Variants
+- `default`: 기본 활성 상태
+- `disabled`: 전체 비활성화 상태
+
+#### Props
+```typescript
+interface SelectProps<T = string | number> {
+  value?: T;  // 선택적, 제공하면 Controlled (options의 value 타입과 일치)
+  onChange?: (value: T) => void;
+  options: SelectOption<T>[];  // options의 value 타입에 맞춰 value와 onChange 타입이 제한됨
+  label?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  // popup 열림/닫힘은 내부 상태로 관리 (isOpen prop 없음)
+}
+```
+
+**타입 안전성:**
+- `options`의 `value` 타입이 `string`이면, `SelectProps<string>`의 `value`와 `onChange`도 `string` 타입
+- `options`의 `value` 타입이 `number`이면, `SelectProps<number>`의 `value`와 `onChange`도 `number` 타입
+- 타입 불일치 시 컴파일 에러 발생
+
+**상태 관리 방식:**
+- `value`: Controlled 모드 (외부 상태로 제어)
+- `isOpen`: 내부 상태로 관리 (UI 상태이므로 컴포넌트 내부에서 처리)
+
+### Modal 컴포넌트 상세 사양
+
+#### Props
+```typescript
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  title?: string;
+  closeOnBackdropClick?: boolean; // default: true
+  closeOnEsc?: boolean; // default: true
+}
+```
+
+### 공통 구현 요구사항
+- 모든 컴포넌트는 Storybook에서 직접 조작 가능
+- Select: value는 Controlled 모드, popup 상태는 내부 관리
+- Modal: isOpen은 Controlled 모드
+- 웹 표준과 접근성 준수
+- 테스트는 옵션이지만 권장됨
+</PRD>

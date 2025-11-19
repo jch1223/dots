@@ -14,6 +14,7 @@ const dirname =
 // 일반 테스트 실행 시 (`npm test`)에는 기본 프로젝트만 실행됨
 // Storybook 테스트 실행 시 (`npm run test:storybook`)에는 `--project=storybook`으로 명시적으로 실행
 export default defineConfig({
+  root: dirname,
   resolve: {
     alias: {
       '@': path.resolve(dirname, './src'),
@@ -37,6 +38,8 @@ export default defineConfig({
           environment: 'jsdom',
           css: true,
           setupFiles: ['./src/test/setup.ts'],
+          // 스토리북 파일은 제외
+          exclude: ['**/*.stories.@(ts|tsx)', '**/node_modules/**', '**/dist/**'],
         },
       },
       // Storybook 프로젝트 (Storybook 테스트용)

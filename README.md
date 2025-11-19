@@ -33,36 +33,16 @@ npm run preview
 - **React** - UI 라이브러리
 - **TypeScript** - 타입 안정성
 - **Vite** - 빌드 도구
-      
-## Taskmaster 사용법
+- **Tailwind CSS** - 스타일링
+- **Storybook** - 문서화
+- **Vitest** - 테스트
+- **Prettier** - 코드 포맷팅
+- **ESLint** - 코드 린팅
 
-이 프로젝트는 Taskmaster를 사용하여 작업을 관리합니다.
+## 고려한 점
 
-### 기본 명령어
+### Select 컴포넌트
 
-```bash
-# 작업 목록 확인
-task-master list
-
-# 다음 작업 확인
-task-master next
-
-# 작업 상태 변경
-task-master set-status --id=1 --status=done
-```
-
-자세한 사용법은 `taskmaster-guide.md` 파일을 참고하세요.
-
-## 스크립트
-
-- `npm run dev` - 개발 서버 실행
-- `npm run build` - 프로덕션 빌드
-- `npm run preview` - 빌드 결과 미리보기
-- `npm run lint` - ESLint 실행
-- `npm run format` - Prettier 포맷팅 확인
-- `npm run format:fix` - Prettier 포맷팅 자동 수정
-- `npm run test` - 테스트 실행
-
-## 라이선스
-
-ISC
+Select 컴포넌트는 헤드리스 컴포넌트로 구현하여 유연성을 높였습니다.
+디자인시스템이 정해지지 않아 스타일은 상위에서 진행하였습니다.
+디자인 시스템이 정의되면 select 컴포넌트 내부에 스타일을 진행합니다.
