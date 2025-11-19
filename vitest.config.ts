@@ -38,6 +38,8 @@ export default defineConfig({
           environment: 'jsdom',
           css: true,
           setupFiles: ['./src/test/setup.ts'],
+          // 스토리북 파일은 제외
+          exclude: ['**/*.stories.@(ts|tsx)', '**/node_modules/**', '**/dist/**'],
         },
       },
       // Storybook 프로젝트 (Storybook 테스트용)
