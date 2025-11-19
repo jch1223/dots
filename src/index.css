@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+/* Data attribute variants for component states */
+@variant data-state-open (&[data-state="open"]);
+@variant data-state-closed (&[data-state="closed"]);
+@variant data-highlighted (&[data-highlighted]);
+@variant data-disabled (&[data-disabled="true"]);
+
 :root {
   color-scheme: light dark;
   font-synthesis: none;

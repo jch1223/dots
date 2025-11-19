@@ -33,7 +33,7 @@ npm run preview
 - **React** - UI 라이브러리
 - **TypeScript** - 타입 안정성
 - **Vite** - 빌드 도구
-      
+
 ## Taskmaster 사용법
 
 이 프로젝트는 Taskmaster를 사용하여 작업을 관리합니다.
