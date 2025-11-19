@@ -1,0 +1,133 @@
+{
+  "meta": {
+    "generatedAt": "2025-11-19T07:29:15.389Z",
+    "tasksAnalyzed": 15,
+    "totalTasks": 15,
+    "analysisCount": 15,
+    "thresholdScore": 5,
+    "projectName": "Taskmaster",
+    "usedResearch": true
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 1,
+      "taskTitle": "기반 설정: 공통 훅 및 스타일링 기반 마련",
+      "complexityScore": 2,
+      "recommendedSubtasks": 2,
+      "expansionPrompt": "`useClickOutside` 훅 파일 생성 및 구현과 `tailwind.config.js` 파일에 `data-*` 속성 기반의 variant를 추가하는 두 개의 하위 작업으로 분리해 주세요.",
+      "reasoning": "이 작업은 잘 알려진 `useClickOutside` 훅을 구현하고 Tailwind 설정을 수정하는 것으로 구성됩니다. 두 작업 모두 복잡한 비즈니스 로직을 포함하지 않으며, 독립적으로 구현 및 테스트가 가능합니다. 기존 코드베이스에 미치는 영향이 적고, 구현 패턴이 명확하여 복잡도가 낮습니다."
+    },
+    {
+      "taskId": 2,
+      "taskTitle": "Select 컴포넌트: 기본 구조 및 상태 관리 구현",
+      "complexityScore": 5,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Select 컴포넌트의 상태 관리를 위한 React Context와 Provider 생성, `useSelect` 커스텀 훅 구현, 그리고 `Select`, `SelectTrigger`, `SelectPopup`, `SelectOption` 등 기본 컴포넌트 파일 구조를 생성하는 하위 작업으로 분리해 주세요.",
+      "reasoning": "컴파운드 컴포넌트 패턴과 React Context API를 사용하여 Select 컴포넌트의 핵심 아키텍처를 설계하는 작업입니다. 제네릭 타입을 이용한 타입 안정성 확보, 상태(value, isOpen) 관리 로직 구현 등 초기 설계의 중요성이 매우 높습니다. 여러 하위 컴포넌트의 상호작용 기반을 다지는 작업이므로 중간 수준의 복잡도를 가집니다."
+    },
+    {
+      "taskId": 3,
+      "taskTitle": "Select 컴포넌트: 스타일링 및 시각적 상태 구현",
+      "complexityScore": 3,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "`SelectTrigger`의 기본 및 상태별(open, disabled) 스타일링, `SelectPopup`과 `SelectList`의 레이아웃 및 스타일링, `SelectOption`의 기본, hover, highlighted 상태 스타일링으로 하위 작업을 분리해 주세요.",
+      "reasoning": "이 작업은 이미 정의된 상태(isOpen, disabled 등)를 기반으로 Tailwind CSS를 사용하여 시각적 스타일을 적용하는 것입니다. `data-*` 속성을 활용하므로 CSS 로직은 비교적 명확합니다. 복잡한 로직보다는 디자인 시스템에 맞춘 세심한 스타일링이 주된 작업이므로 복잡도는 낮은 편입니다."
+    },
+    {
+      "taskId": 4,
+      "taskTitle": "Select 컴포넌트: 마우스 인터랙션 및 값 변경 기능 구현",
+      "complexityScore": 4,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "`SelectTrigger` 클릭 시 팝업을 열고 닫는 기능 구현, `SelectOption` 클릭 시 값을 변경하고 팝업을 닫는 기능 구현, `useClickOutside` 훅을 적용하여 외부 클릭 시 팝업을 닫는 기능 구현으로 하위 작업을 분리해 주세요.",
+      "reasoning": "컴포넌트의 핵심 상호작용 로직을 구현하는 작업입니다. 여러 컴포넌트(`Trigger`, `Option`, `Popup`)와 훅(`useClickOutside`) 간의 이벤트 핸들링 및 상태 변경을 조정해야 합니다. 로직 자체가 복잡하지는 않지만, 정확한 동작을 위해 여러 부분을 유기적으로 연결해야 하므로 중간보다 약간 낮은 복잡도를 가집니다."
+    },
+    {
+      "taskId": 5,
+      "taskTitle": "Select 컴포넌트: 키보드 네비게이션 구현",
+      "complexityScore": 7,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "`SelectTrigger`에서 키보드로 팝업을 여는 기능 구현, `SelectPopup`에서 화살표 키(위/아래)로 옵션을 탐색하고 하이라이트하는 기능 구현, Enter 키로 옵션을 선택하고 Esc 키로 팝업을 닫는 기능 구현으로 하위 작업을 분리해 주세요.",
+      "reasoning": "키보드 네비게이션은 상태(하이라이트된 인덱스) 관리, 복잡한 `keydown` 이벤트 처리, 그리고 스크롤과 같은 브라우저 기본 동작 제어를 포함합니다. 특히 옵션 목록의 처음과 끝을 순환하는 로직과 `Escape` 키 처리 등 고려해야 할 엣지 케이스가 많아 구현 복잡도가 높은 편입니다."
+    },
+    {
+      "taskId": 6,
+      "taskTitle": "Select 컴포넌트: 접근성(A11y) 및 ARIA 속성 적용",
+      "complexityScore": 8,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "`useId`를 사용하여 컴포넌트 요소들의 ID를 생성하고 연결하는 작업, `SelectTrigger`와 `SelectPopup`에 `role`, `aria-haspopup`, `aria-expanded` 등 ARIA 속성을 적용하는 작업, `SelectOption`에 `role`과 `aria-selected` 속성을 적용하는 작업, 키보드 탐색과 연동하여 `aria-activedescendant`를 동적으로 관리하는 작업으로 분리해 주세요.",
+      "reasoning": "WAI-ARIA 명세에 대한 정확한 이해가 필요하며, 컴포넌트의 동적 상태(열림 여부, 선택된 값, 하이라이트된 옵션)에 따라 `aria-*` 속성을 정확하게 관리해야 합니다. 특히 `aria-activedescendant`와 같은 동적 속성은 키보드 네비게이션 로직과 긴밀하게 연결되어 있어 구현 복잡도가 매우 높습니다. 잘못 구현하면 오히려 접근성을 해칠 수 있어 신중한 접근이 필요합니다."
+    },
+    {
+      "taskId": 7,
+      "taskTitle": "Select 컴포넌트: Focus 관리 구현",
+      "complexityScore": 4,
+      "recommendedSubtasks": 2,
+      "expansionPrompt": "`SelectTrigger` 요소에 대한 `ref`를 생성하고 관리하는 작업, 팝업이 닫힐 때(예: Esc, 외부 클릭) 저장된 `ref`를 사용하여 트리거로 포커스를 복원하는 로직 구현으로 하위 작업을 분리해 주세요.",
+      "reasoning": "`aria-activedescendant` 패턴을 사용함으로써 팝업 내에서 실제 DOM 포커스를 이동시키는 복잡한 로직을 피할 수 있습니다. 주된 작업은 팝업이 닫힐 때 원래 트리거로 포커스를 되돌리는 것이며, 이는 `ref`와 `useEffect`를 사용하여 비교적 간단하게 구현할 수 있습니다. 하지만 포커스 관리는 버그가 발생하기 쉬운 부분이므로 신중함이 필요합니다."
+    },
+    {
+      "taskId": 8,
+      "taskTitle": "Select 컴포넌트: Storybook 스토리 작성",
+      "complexityScore": 3,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "기본 Select 컴포넌트를 보여주는 'Default' 스토리 작성, `disabled` prop을 테스트하는 'Disabled' 스토리 작성, 외부 상태와 연동되는 'Controlled' 스토리 작성, 그리고 `argTypes`를 설정하여 Controls 애드온에서 다양한 props를 인터랙티브하게 조작할 수 있도록 구성하는 작업으로 분리해 주세요.",
+      "reasoning": "컴포넌트의 내부 로직을 변경하는 것이 아니라, 이미 구현된 기능을 Storybook을 통해 문서화하고 테스트하는 작업입니다. Storybook의 기본 API(`Meta`, `Story`)와 `args`를 사용하여 다양한 상태를 보여주는 것은 비교적 간단합니다. 복잡도는 낮지만 여러 케이스를 꼼꼼하게 작성해야 합니다."
+    },
+    {
+      "taskId": 9,
+      "taskTitle": "Modal 컴포넌트: 기본 구조 및 상태 관리 구현",
+      "complexityScore": 4,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "`document.body`에 자식 요소를 렌더링하는 React Portal 래퍼 컴포넌트 구현, `isOpen` prop에 따라 렌더링 여부를 결정하는 `Modal` 컴포넌트 기본 구조 생성, `ModalBackdrop`과 `ModalContent`의 기본 레이아웃 및 스타일링 작업으로 분리해 주세요.",
+      "reasoning": "`ReactDOM.createPortal`을 사용하여 DOM의 특정 위치에 렌더링하는 것은 일반적인 컴포넌트 개발보다 약간의 복잡성을 더합니다. 특히 서버 사이드 렌더링(SSR) 환경을 고려하여 클라이언트 측에서만 포털이 생성되도록 처리해야 합니다. 이 부분을 제외하면 기본 구조와 상태 관리는 비교적 간단합니다."
+    },
+    {
+      "taskId": 10,
+      "taskTitle": "Modal 컴포넌트: 닫기 인터랙션 구현",
+      "complexityScore": 3,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "`useEffect`를 사용하여 모달이 열려있을 때 'Escape' 키를 감지하고 `onClose`를 호출하는 기능 구현, Backdrop 요소 클릭 시 `onClose`를 호출하는 기능 구현, Modal 콘텐츠 영역에서의 클릭 이벤트가 Backdrop으로 전파되지 않도록 `stopPropagation` 처리하는 하위 작업으로 분리해 주세요.",
+      "reasoning": "모달의 일반적인 닫기 동작을 구현하는 작업입니다. `useEffect`를 이용한 이벤트 리스너 관리는 표준적인 React 패턴입니다. `stopPropagation`을 사용하여 이벤트 버블링을 막는 것이 핵심이지만, 이 또한 모달 구현에서 잘 알려진 기법이므로 전반적인 복잡도는 높지 않습니다."
+    },
+    {
+      "taskId": 11,
+      "taskTitle": "Modal 컴포넌트: Focus Trap 구현",
+      "complexityScore": 8,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "모달 내에서 포커스 가능한 모든 요소를 조회하는 유틸리티 함수 구현, Tab 키 이벤트(정방향)를 가로채 포커스를 순환시키는 로직 구현, Shift+Tab 키 이벤트(역방향)를 가로채 포커스를 순환시키는 로직 구현, 이 로직들을 `useFocusTrap` 커스텀 훅으로 캡슐화하는 작업으로 분리해 주세요.",
+      "reasoning": "Focus Trap은 모달 내의 모든 포커스 가능 요소를 동적으로 식별하고, 사용자의 Tab 키 입력에 따라 포커스를 수동으로 관리해야 하는 매우 복잡한 기능입니다. 정방향/역방향 순환, 동적으로 추가/제거되는 요소 처리 등 고려할 엣지 케이스가 많아 구현 난이도가 매우 높습니다. 접근성에서 매우 중요하지만, 버그 없이 완벽하게 구현하기가 어렵습니다."
+    },
+    {
+      "taskId": 12,
+      "taskTitle": "Modal 컴포넌트: Focus 관리 및 복원 구현",
+      "complexityScore": 5,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "모달이 열릴 때 이전에 포커스된 요소를 저장하는 로직 구현, 모달이 열릴 때 내부의 첫 번째 포커스 가능 요소로 포커스를 이동시키는 로직 구현, 모달이 닫힐 때 저장해 둔 이전 요소로 포커스를 복원하는 로직 구현으로 하위 작업을 분리해 주세요.",
+      "reasoning": "모달이 열리기 전의 포커스 상태를 저장하고 닫힐 때 복원하는 로직은 `useEffect`를 통해 구현할 수 있습니다. 모달이 열렸을 때 첫 요소에 포커스를 주는 로직도 Focus Trap 구현과 일부 코드를 공유할 수 있습니다. Focus Trap보다는 간단하지만, 컴포넌트의 생명주기와 DOM의 상태를 동기화해야 하므로 중간 수준의 복잡도를 가집니다."
+    },
+    {
+      "taskId": 13,
+      "taskTitle": "Modal 컴포넌트: 접근성(A11y) 및 ARIA 속성 적용",
+      "complexityScore": 4,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "`ModalContent`에 `role='dialog'`와 `aria-modal='true'` 속성을 추가하는 작업, 모달의 제목 요소와 `aria-labelledby`를 연결하는 작업, 선택적으로 모달 설명 요소와 `aria-describedby`를 연결하는 작업으로 분리해 주세요.",
+      "reasoning": "WAI-ARIA Dialog 패턴 적용은 Select 컴포넌트만큼 동적이지는 않습니다. `role='dialog'`와 `aria-modal='true'` 적용은 간단하지만, `aria-labelledby` 등을 통해 제목과 내용을 올바르게 연결하려면 props 전달 및 ID 관리가 필요합니다. ARIA에 대한 지식이 필요하지만 구현 자체는 비교적 명확합니다."
+    },
+    {
+      "taskId": 14,
+      "taskTitle": "Modal 컴포넌트: Storybook 스토리 작성",
+      "complexityScore": 3,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "기본 모달을 열고 닫는 'Default' 스토리 작성, 모달 본문 내용이 길어 스크롤이 발생하는 'Long Content' 스토리 작성, `closeOnBackdropClick` 같은 props를 제어하는 'Custom Close Options' 스토리 작성으로 분리해 주세요.",
+      "reasoning": "Select 컴포넌트 스토리 작성과 마찬가지로, 구현된 기능을 문서화하고 테스트하는 작업입니다. 모달의 경우 `isOpen` 상태를 스토리 내에서 관리해야 하는 점이 추가되지만, 이는 `useState`를 사용하는 래퍼 컴포넌트로 쉽게 해결할 수 있습니다. 복잡도는 낮습니다."
+    },
+    {
+      "taskId": 15,
+      "taskTitle": "향후 개선: Select 컴포넌트 Disabled Option 기능 추가",
+      "complexityScore": 5,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "`SelectOption` 타입에 `disabled` 속성 추가 및 렌더링 시 스타일/ARIA 속성 적용, 비활성화된 옵션 클릭 시 `onChange`가 호출되지 않도록 방어 로직 추가, 키보드 네비게이션 시 비활성화된 옵션을 건너뛰도록 로직 수정으로 하위 작업을 분리해 주세요.",
+      "reasoning": "이 기능은 Select 컴포넌트의 여러 부분(타입 정의, 렌더링, 클릭 이벤트, 키보드 네비게이션)에 걸쳐 수정이 필요합니다. 특히, 이미 복잡한 키보드 네비게이션 로직을 수정하여 비활성화된 옵션을 건너뛰도록 만드는 작업은 신중한 접근이 필요하며, 기존 기능에 영향을 주지 않도록 테스트가 중요합니다. 따라서 중간 수준의 복잡도를 가집니다."
+    }
+  ]
+}
