@@ -1,9 +1,8 @@
 import { useContext } from 'react';
-import { createContext } from 'react';
 
-import type { SelectContextValue } from '../Select';
+import { SelectContext } from './SelectContext';
 
-export const SelectContext = createContext<SelectContextValue<unknown> | null>(null);
+import type { SelectContextValue } from './types';
 
 /**
  * Select 컴포넌트의 컨텍스트에 접근하는 커스텀 훅
