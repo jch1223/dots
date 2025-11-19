@@ -5,6 +5,7 @@ import { useSelect } from './model/useSelect';
 
 import type {
   SelectContextValue,
+  SelectGroupProps,
   SelectLabelProps,
   SelectListProps,
   SelectOptionProps,
@@ -64,7 +65,7 @@ export function SelectLabel({ children, ...props }: SelectLabelProps) {
 
 // SelectTrigger
 export function SelectTrigger({ onClick, className, id, ...props }: SelectTriggerProps) {
-  const { isOpen, setIsOpen, value, options, disabled, triggerId, setTriggerId } = useSelect();
+  const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId } = useSelect();
 
   // 실제 사용되는 id 값을 계산
   const actualId = id || triggerId;
@@ -82,8 +83,7 @@ export function SelectTrigger({ onClick, className, id, ...props }: SelectTrigge
     onClick?.(event);
   };
 
-  const selectedOption = options.find((option) => option.value === value);
-  const displayText = selectedOption?.label || '선택하세요';
+  const displayText = value ? value.label : '선택하세요';
 
   return (
     <button
@@ -118,7 +118,31 @@ export function SelectPopup({ children, ...props }: SelectPopupProps) {
 
 // SelectList
 export function SelectList({ children, ...props }: SelectListProps) {
-  return <ul {...props}>{children}</ul>;
+  const { options } = useSelect();
+
+  // children이 있으면 사용자가 직접 렌더링한 것으로 간주
+  if (children) {
+    return <ul {...props}>{children}</ul>;
+  }
+
+  // children이 없으면 options를 자동으로 렌더링
+  return (
+    <ul {...props}>
+      {options.map((option) => (
+        <SelectOption key={option.value} option={option} disabled={option.disabled} />
+      ))}
+    </ul>
+  );
+}
+
+// SelectGroup
+export function SelectGroup({ label, children, className, ...props }: SelectGroupProps) {
+  return (
+    <li role="group" aria-label={label} className={className} {...props}>
+      <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">{label}</div>
+      <ul>{children}</ul>
+    </li>
+  );
 }
 
 // SelectOption
@@ -126,24 +150,50 @@ export function SelectOption({ option, onClick, disabled, ...props }: SelectOpti
   const { value, onChange, setIsOpen } = useSelect();
 
   const handleClick = (event: React.MouseEvent<HTMLLIElement>) => {
-    if (disabled) {
+    if (disabled || option.disabled) {
       event.preventDefault();
       return;
     }
 
-    onChange?.(option.value);
+    onChange?.(option);
     setIsOpen(false);
     onClick?.(event);
   };
 
-  const isSelected = value === option.value;
+  // 비교 함수: value가 SelectOptionType이므로 value.value와 비교
+  const compareValue = <T,>(optionValue: T, targetValue: T): boolean => {
+    // null 체크 (typeof null === 'object'이므로 먼저 처리)
+    if (optionValue === null || targetValue === null) {
+      return optionValue === targetValue;
+    }
+
+    // 둘 다 원시 타입이면 === 비교
+    const isOptionPrimitive = typeof optionValue !== 'object';
+    const isTargetPrimitive = typeof targetValue !== 'object';
+
+    if (isOptionPrimitive && isTargetPrimitive) {
+      return optionValue === targetValue;
+    }
+
+    // 하나는 원시 타입이고 하나는 객체면 같을 수 없음
+    if (isOptionPrimitive !== isTargetPrimitive) {
+      return false;
+    }
+
+    // 둘 다 객체면 참조 비교
+    return optionValue === targetValue;
+  };
+
+  const isSelected = value !== undefined && compareValue(option.value, value.value);
 
   return (
     <li
       onClick={handleClick}
       data-selected={isSelected}
-      data-disabled={disabled ? 'true' : undefined}
-      aria-disabled={disabled}
+      data-disabled={disabled || option.disabled ? 'true' : undefined}
+      aria-disabled={disabled || option.disabled}
+      role="option"
+      aria-selected={isSelected}
       {...props}
     >
       {option.label}

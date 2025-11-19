@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import {
   Select,
+  SelectGroup,
   SelectLabel,
   SelectList,
   SelectOption,
@@ -47,18 +48,18 @@ type Story = StoryObj<typeof meta>;
 
 const DefaultSelect: Story['render'] = (args) => {
   const typedArgs = args as {
-    value?: string | number;
+    value?: SelectOptionType;
     options: SelectOptionType[];
     disabled?: boolean;
     label?: string;
   };
-  const [value, setValue] = useState<string | number | undefined>(typedArgs.value);
+  const [value, setValue] = useState<SelectOptionType | undefined>(typedArgs.value);
 
   return (
     <div className="w-64">
       <Select
         value={value}
-        onChange={setValue}
+        onChange={(option) => setValue(option)}
         options={typedArgs.options}
         disabled={typedArgs.disabled}
       >
@@ -132,4 +133,72 @@ export const WithDisabledOption: Story = {
     ],
     disabled: false,
   } as Story['args'],
+};
+
+// 그룹 레이블이 있는 셀렉트를 위한 렌더 함수
+const GroupSelect: Story['render'] = (args) => {
+  const typedArgs = args as {
+    value?: SelectOptionType;
+    options: SelectOptionType[];
+    disabled?: boolean;
+    label?: string;
+  };
+  const [value, setValue] = useState<SelectOptionType | undefined>(typedArgs.value);
+
+  return (
+    <div className="w-64">
+      <Select
+        value={value}
+        onChange={(option) => setValue(option)}
+        options={typedArgs.options}
+        disabled={typedArgs.disabled}
+      >
+        {typedArgs.label && <SelectLabel>{typedArgs.label}</SelectLabel>}
+        <div className="relative">
+          <SelectTrigger className="flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-state-open:border-blue-500 data-state-open:ring-2 data-state-open:ring-blue-500" />
+          <SelectPopup className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
+            <SelectList className="max-h-60 overflow-auto py-1">
+              <SelectGroup label="과일">
+                <SelectOption
+                  option={{ value: 'apple', label: '사과' }}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                />
+                <SelectOption
+                  option={{ value: 'banana', label: '바나나' }}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                />
+                <SelectOption
+                  option={{ value: 'orange', label: '오렌지' }}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                />
+              </SelectGroup>
+              <SelectGroup label="채소">
+                <SelectOption
+                  option={{ value: 'carrot', label: '당근' }}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                />
+                <SelectOption
+                  option={{ value: 'tomato', label: '토마토' }}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                />
+                <SelectOption
+                  option={{ value: 'lettuce', label: '상추' }}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                />
+              </SelectGroup>
+            </SelectList>
+          </SelectPopup>
+        </div>
+      </Select>
+    </div>
+  );
+};
+
+export const WithGroups: Story = {
+  render: GroupSelect,
+  args: {
+    value: undefined,
+    options: [],
+    children: null,
+  },
 };

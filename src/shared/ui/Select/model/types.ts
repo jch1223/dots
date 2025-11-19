@@ -1,5 +1,6 @@
 import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
+// 개별 옵션 타입
 export interface SelectOptionType<T = string | number> {
   value: T;
   label: string;
@@ -9,8 +10,8 @@ export interface SelectOptionType<T = string | number> {
 export interface SelectContextValue<T = string | number> {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  value?: T;
-  onChange?: (value: T) => void;
+  value?: SelectOptionType<T>;
+  onChange?: (option: SelectOptionType<T>) => void;
   options: SelectOptionType<T>[];
   disabled?: boolean;
   triggerId?: string;
@@ -18,8 +19,8 @@ export interface SelectContextValue<T = string | number> {
 }
 
 export interface SelectProps<T = string | number> {
-  value?: T;
-  onChange?: (value: T) => void;
+  value?: SelectOptionType<T>;
+  onChange?: (option: SelectOptionType<T>) => void;
   options: SelectOptionType<T>[];
   label?: string;
   placeholder?: string;
@@ -38,10 +39,15 @@ export interface SelectPopupProps extends ComponentPropsWithoutRef<'div'> {
 }
 
 export interface SelectListProps extends ComponentPropsWithoutRef<'ul'> {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export interface SelectOptionProps extends ComponentPropsWithoutRef<'li'> {
   option: SelectOptionType;
   disabled?: boolean;
+}
+
+export interface SelectGroupProps extends ComponentPropsWithoutRef<'li'> {
+  label: string;
+  children: ReactNode;
 }
