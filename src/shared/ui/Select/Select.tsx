@@ -1,5 +1,6 @@
 import React, { useId, useState } from 'react';
 
+import { compareValue } from './lib/compareValue';
 import { SelectContext } from './model/SelectContext';
 import { useSelect } from './model/useSelect';
 
@@ -154,30 +155,6 @@ export function SelectOption({ option, onClick, disabled, ...props }: SelectOpti
     onChange?.(option);
     setIsOpen(false);
     onClick?.(event);
-  };
-
-  // 비교 함수: value가 SelectOptionType이므로 value.value와 비교
-  const compareValue = <T,>(optionValue: T, targetValue: T): boolean => {
-    // null 체크 (typeof null === 'object'이므로 먼저 처리)
-    if (optionValue === null || targetValue === null) {
-      return optionValue === targetValue;
-    }
-
-    // 둘 다 원시 타입이면 === 비교
-    const isOptionPrimitive = typeof optionValue !== 'object';
-    const isTargetPrimitive = typeof targetValue !== 'object';
-
-    if (isOptionPrimitive && isTargetPrimitive) {
-      return optionValue === targetValue;
-    }
-
-    // 하나는 원시 타입이고 하나는 객체면 같을 수 없음
-    if (isOptionPrimitive !== isTargetPrimitive) {
-      return false;
-    }
-
-    // 둘 다 객체면 참조 비교
-    return optionValue === targetValue;
   };
 
   const isSelected = value !== undefined && compareValue(option.value, value.value);
