@@ -12,6 +12,8 @@ export interface SelectContextValue<T = string | number> {
   onChange?: (value: T) => void;
   options: SelectOptionType<T>[];
   disabled?: boolean;
+  triggerId?: string;
+  setTriggerId?: (id: string) => void;
 }
 
 export interface SelectProps<T = string | number> {

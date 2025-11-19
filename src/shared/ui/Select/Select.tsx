@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 
 import { SelectContext } from './model/SelectContext';
 import { useSelect } from './model/useSelect';
@@ -21,6 +21,8 @@ export function Select<T = string | number>({
   children,
 }: SelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
+  const defaultTriggerId = useId();
+  const [actualTriggerId, setActualTriggerId] = useState<string>(defaultTriggerId);
 
   const contextValue: SelectContextValue<T> = {
     isOpen,
@@ -29,6 +31,8 @@ export function Select<T = string | number>({
     onChange,
     options,
     disabled,
+    triggerId: actualTriggerId,
+    setTriggerId: setActualTriggerId,
   };
 
   return (
@@ -40,12 +44,37 @@ export function Select<T = string | number>({
 
 // SelectLabel
 export function SelectLabel({ children, ...props }: SelectLabelProps) {
-  return <label {...props}>{children}</label>;
+  const { disabled, triggerId } = useSelect();
+
+  const handleClick = (event: React.MouseEvent<HTMLLabelElement>) => {
+    // htmlFor로 연결된 button의 클릭 이벤트가 자동으로 발생하지만,
+    // disabled 상태일 때는 이벤트가 발생하지 않으므로 명시적으로 처리
+    if (disabled) {
+      event.preventDefault();
+      return;
+    }
+  };
+
+  return (
+    <label htmlFor={triggerId} onClick={handleClick} {...props}>
+      {children}
+    </label>
+  );
 }
 
 // SelectTrigger
-export function SelectTrigger({ onClick, className, ...props }: SelectTriggerProps) {
-  const { isOpen, setIsOpen, value, options, disabled } = useSelect();
+export function SelectTrigger({ onClick, className, id, ...props }: SelectTriggerProps) {
+  const { isOpen, setIsOpen, value, options, disabled, triggerId, setTriggerId } = useSelect();
+
+  // 실제 사용되는 id 값을 계산
+  const actualId = id || triggerId;
+
+  // SelectTrigger에서만 id를 지정할 수 있으므로, 렌더링 시점에 컨텍스트 업데이트
+  React.useLayoutEffect(() => {
+    if (setTriggerId && actualId) {
+      setTriggerId(actualId);
+    }
+  }, [actualId, setTriggerId]);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
@@ -59,6 +88,7 @@ export function SelectTrigger({ onClick, className, ...props }: SelectTriggerPro
   return (
     <button
       type="button"
+      id={actualId}
       onClick={handleClick}
       disabled={disabled}
       data-state={isOpen ? 'open' : 'closed'}
