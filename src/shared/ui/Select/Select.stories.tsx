@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { expect, userEvent, within } from 'storybook/test';
 
 import {
   Select,
@@ -97,6 +98,29 @@ export const Default: Story = {
     ],
     label: '라벨입니다',
   } as Story['args'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button');
+
+    // 초기 상태: 팝업이 닫혀있어야 함
+    const popup = canvasElement.querySelector('[role="listbox"]');
+    expect(popup).not.toBeInTheDocument();
+
+    // 트리거 클릭 시 팝업이 열려야 함
+    await userEvent.click(trigger);
+    const openPopup = canvasElement.querySelector('[role="listbox"]');
+    expect(openPopup).toBeInTheDocument();
+
+    // 옵션 클릭 시 팝업이 닫히고 값이 변경되어야 함
+    const option1 = canvas.getByText('옵션 1');
+    await userEvent.click(option1);
+
+    // 팝업이 닫혔는지 확인
+    await expect(canvasElement.querySelector('[role="listbox"]')).not.toBeInTheDocument();
+
+    // 선택된 값이 표시되는지 확인
+    expect(trigger).toHaveTextContent('옵션 1');
+  },
 };
 
 export const WithLabel: Story = {
@@ -123,6 +147,18 @@ export const Disabled: Story = {
     ],
     disabled: true,
   } as Story['args'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button');
+
+    // disabled 상태 확인
+    expect(trigger).toBeDisabled();
+
+    // disabled 상태에서 클릭해도 팝업이 열리지 않아야 함
+    await userEvent.click(trigger);
+    const popup = canvasElement.querySelector('[role="listbox"]');
+    expect(popup).not.toBeInTheDocument();
+  },
 };
 
 export const WithDisabledOption: Story = {
@@ -136,6 +172,31 @@ export const WithDisabledOption: Story = {
     ],
     disabled: false,
   } as Story['args'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button');
+
+    // 팝업 열기
+    await userEvent.click(trigger);
+    const popup = canvasElement.querySelector('[role="listbox"]');
+    expect(popup).toBeInTheDocument();
+
+    // disabled 옵션은 클릭할 수 없어야 함
+    const disabledOption = canvas.getByText('옵션 2');
+    expect(disabledOption).toHaveAttribute('aria-disabled', 'true');
+    expect(disabledOption).toHaveAttribute('data-disabled', 'true');
+
+    // disabled 옵션 클릭 시도 (변경되지 않아야 함)
+    await userEvent.click(disabledOption);
+    // 팝업이 여전히 열려있어야 함
+    expect(canvasElement.querySelector('[role="listbox"]')).toBeInTheDocument();
+
+    // 활성화된 옵션 클릭 시 정상 작동
+    const enabledOption = canvas.getByText('옵션 1');
+    await userEvent.click(enabledOption);
+    expect(canvasElement.querySelector('[role="listbox"]')).not.toBeInTheDocument();
+    expect(trigger).toHaveTextContent('옵션 1');
+  },
 };
 
 // 그룹 레이블이 있는 셀렉트를 위한 렌더 함수
@@ -211,4 +272,25 @@ export const WithGroups: Story = {
     ],
     children: null,
   } as Story['args'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button');
+
+    // 팝업 열기
+    await userEvent.click(trigger);
+    const popup = canvasElement.querySelector('[role="listbox"]');
+    expect(popup).toBeInTheDocument();
+
+    // 그룹 레이블 확인
+    expect(canvas.getByText('과일')).toBeInTheDocument();
+    expect(canvas.getByText('채소')).toBeInTheDocument();
+
+    // 그룹 내 옵션 선택
+    const appleOption = canvas.getByText('사과');
+    await userEvent.click(appleOption);
+
+    // 팝업이 닫히고 값이 변경되었는지 확인
+    expect(canvasElement.querySelector('[role="listbox"]')).not.toBeInTheDocument();
+    expect(trigger).toHaveTextContent('사과');
+  },
 };

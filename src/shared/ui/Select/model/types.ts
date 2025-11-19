@@ -47,7 +47,6 @@ export interface SelectOptionProps<T = string | number> extends ComponentPropsWi
   option: SelectOptionType<T>;
   disabled?: boolean;
 }
-
 export interface SelectGroupProps extends ComponentPropsWithoutRef<'li'> {
   label: string;
   children: ReactNode;

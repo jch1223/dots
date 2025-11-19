@@ -114,12 +114,16 @@ export function SelectList({ children, ...props }: SelectListProps) {
 
   // children이 있으면 사용자가 직접 렌더링한 것으로 간주
   if (children) {
-    return <ul {...props}>{children}</ul>;
+    return (
+      <ul role="listbox" {...props}>
+        {children}
+      </ul>
+    );
   }
 
   // children이 없으면 options를 자동으로 렌더링
   return (
-    <ul {...props}>
+    <ul role="listbox" {...props}>
       {options.map((option) => (
         <SelectOption key={String(option.value)} option={option} disabled={option.disabled} />
       ))}
