@@ -1,0 +1,6 @@
+reviews:
+  path_filters:
+    - '!dist/**' # dist 폴더와 그 안의 모든 파일 제외
+    - '!pnpm-lock.yaml' # pnpm-lock.yaml 파일 제외
+    - '!testsprite_tests' # testsprite_tests 파일 제외
+    - '!.taskmaster/**' # .taskmaster 폴더 제외
