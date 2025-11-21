@@ -44,8 +44,10 @@ describe('Modal 컴포넌트', () => {
     );
 
     const backdrop = document.querySelector('[aria-hidden="true"]');
+    expect(backdrop).not.toBeNull();
+
     if (backdrop) {
-      await user.click(backdrop);
+      await user.click(backdrop as HTMLElement);
       expect(handleClose).toHaveBeenCalledTimes(1);
     }
   });
