@@ -16,6 +16,7 @@ export interface SelectContextValue<T = string | number> {
   disabled?: boolean;
   triggerId?: string;
   setTriggerId?: (id: string) => void;
+  listboxId: string;
 }
 
 export interface SelectProps<T = string | number> {

@@ -24,6 +24,7 @@ export function Select<T = string | number>({
 }: SelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const defaultTriggerId = useId();
+  const listboxId = useId();
   const [actualTriggerId, setActualTriggerId] = useState<string>(defaultTriggerId);
 
   const contextValue: SelectContextValue<T> = {
@@ -35,6 +36,7 @@ export function Select<T = string | number>({
     disabled,
     triggerId: actualTriggerId,
     setTriggerId: setActualTriggerId,
+    listboxId,
   };
 
   return (
@@ -57,7 +59,7 @@ export function SelectLabel({ children, ...props }: SelectLabelProps) {
 
 // SelectTrigger
 export function SelectTrigger({ onClick, className, id, label, ...props }: SelectTriggerProps) {
-  const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId } = useSelect();
+  const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId, listboxId } = useSelect();
 
   // 실제 사용되는 id 값을 계산
   const actualId = id || triggerId;
@@ -84,6 +86,9 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
       id={actualId}
       onClick={handleClick}
       disabled={disabled}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
+      aria-controls={listboxId}
       data-state={isOpen ? 'open' : 'closed'}
       data-disabled={disabled ? 'true' : undefined}
       aria-disabled={disabled}
@@ -111,12 +116,12 @@ export function SelectPopup({ children, ...props }: SelectPopupProps) {
 
 // SelectList
 export function SelectList({ children, ...props }: SelectListProps) {
-  const { options } = useSelect();
+  const { options, triggerId, listboxId } = useSelect();
 
   // children이 있으면 사용자가 직접 렌더링한 것으로 간주
   if (children) {
     return (
-      <ul role="listbox" {...props}>
+      <ul role="listbox" id={listboxId} aria-labelledby={triggerId} {...props}>
         {children}
       </ul>
     );
@@ -124,7 +129,7 @@ export function SelectList({ children, ...props }: SelectListProps) {
 
   // children이 없으면 options를 자동으로 렌더링
   return (
-    <ul role="listbox" {...props}>
+    <ul role="listbox" id={listboxId} aria-labelledby={triggerId} {...props}>
       {options.map((option) => (
         <SelectOption key={String(option.value)} option={option} disabled={option.disabled} />
       ))}
