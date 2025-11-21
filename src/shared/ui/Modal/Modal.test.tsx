@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Modal, ModalContent } from './Modal';
@@ -84,12 +85,26 @@ describe('Modal 컴포넌트', () => {
     expect(handleClose).not.toHaveBeenCalled();
   });
 
-  describe('Focus Trap', () => {
-    it('모달이 열릴 때 포커스가 모달 래퍼로 이동한다', () => {
+  describe('Focus Management', () => {
+    it('모달이 열릴 때 첫 번째 포커스 가능한 요소로 포커스가 이동한다', () => {
       render(
         <Modal isOpen={true} onClose={() => {}}>
           <ModalContent>
+            <button>First Button</button>
             <input type="text" placeholder="Input 1" />
+          </ModalContent>
+        </Modal>,
+      );
+
+      const firstButton = screen.getByText('First Button');
+      expect(firstButton).toHaveFocus();
+    });
+
+    it('모달이 열릴 때 포커스 가능한 요소가 없으면 래퍼로 포커스가 이동한다', () => {
+      render(
+        <Modal isOpen={true} onClose={() => {}}>
+          <ModalContent>
+            <div>No focusable elements</div>
           </ModalContent>
         </Modal>,
       );
@@ -97,6 +112,44 @@ describe('Modal 컴포넌트', () => {
       expect(document.activeElement).toHaveAttribute('tabindex', '-1');
     });
 
+    it('모달이 닫힐 때 이전 포커스 요소로 포커스가 복원된다', async () => {
+      const user = userEvent.setup();
+      const TestComponent = () => {
+        const [isOpen, setIsOpen] = React.useState(false);
+
+        return (
+          <>
+            <button onClick={() => setIsOpen(true)}>Open Modal</button>
+            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+              <ModalContent>
+                <button>Close</button>
+              </ModalContent>
+            </Modal>
+          </>
+        );
+      };
+
+      render(<TestComponent />);
+      const openButton = screen.getByText('Open Modal');
+
+      // 모달 열기 전에 버튼에 포커스
+      openButton.focus();
+      expect(openButton).toHaveFocus();
+
+      // 모달 열기
+      await user.click(openButton);
+      const closeButton = screen.getByText('Close');
+      expect(closeButton).toHaveFocus();
+
+      // 모달 닫기 (Escape 키 사용)
+      await user.keyboard('{Escape}');
+
+      // 포커스가 원래 버튼으로 복원되었는지 확인
+      expect(openButton).toHaveFocus();
+    });
+  });
+
+  describe('Focus Trap', () => {
     it('Tab 키를 누르면 포커스가 내부에서 순환한다', async () => {
       const user = userEvent.setup();
       render(
@@ -113,7 +166,8 @@ describe('Modal 컴포넌트', () => {
       const button2 = screen.getByText('Button 2');
       const button3 = screen.getByText('Button 3');
 
-      await user.tab();
+      // 모달이 열릴 때 첫 번째 버튼으로 포커스가 이동하므로
+      // 이미 button1에 포커스가 있음
       expect(button1).toHaveFocus();
 
       await user.tab();

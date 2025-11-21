@@ -13,11 +13,34 @@ import type {
 
 export function Modal({ isOpen, onClose, children }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      // 모달이 열릴 때 포커스를 모달 래퍼로 이동
-      modalRef.current?.focus();
+      // 모달이 열리기 직전의 포커스 요소 저장
+      previousActiveElementRef.current = document.activeElement as HTMLElement;
+
+      // 모달 내부의 첫 번째 포커스 가능한 요소 찾기
+      const focusableElements = modalRef.current?.querySelectorAll(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+      );
+
+      if (focusableElements && focusableElements.length > 0) {
+        // 첫 번째 포커스 가능한 요소로 포커스 이동
+        (focusableElements[0] as HTMLElement).focus();
+      } else {
+        // 포커스 가능한 요소가 없으면 래퍼로 포커스 이동
+        modalRef.current?.focus();
+      }
+    } else {
+      // 모달이 닫힐 때 이전 포커스 요소로 복원
+      if (previousActiveElementRef.current) {
+        // 요소가 여전히 DOM에 존재하는지 확인
+        if (document.body.contains(previousActiveElementRef.current)) {
+          previousActiveElementRef.current.focus();
+        }
+        previousActiveElementRef.current = null;
+      }
     }
   }, [isOpen]);
 
@@ -70,7 +93,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
         ref={modalRef}
         onKeyDown={handleKeyDown}
         tabIndex={-1}
-        className="fixed inset-0 z-50 flex items-center justify-center outline-none"
+        className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center outline-none"
       >
         {children}
       </div>
@@ -100,7 +123,11 @@ export function ModalContent({ children, className = '' }: ModalContentProps) {
 
   return (
     <>
-      <div className={`${baseStyles} ${className}`} role="dialog" aria-modal="true">
+      <div
+        className={`${baseStyles} ${className} pointer-events-auto`}
+        role="dialog"
+        aria-modal="true"
+      >
         {children}
       </div>
     </>
