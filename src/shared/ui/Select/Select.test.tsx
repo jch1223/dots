@@ -15,7 +15,7 @@ import {
 
 import type { SelectOptionType } from './model/types';
 
-// Wrapper component to manage state for testing
+// 테스트를 위한 상태 관리 래퍼 컴포넌트
 function SelectTestWrapper({
   initialValue,
   disabled = false,
@@ -98,15 +98,16 @@ describe('Select Component', () => {
     const trigger = screen.getByRole('button', { name: /Select Fruit/i });
     trigger.focus();
 
-    // Open with Enter
+    // Enter로 열기
     await user.keyboard('{Enter}');
     expect(screen.getByRole('listbox')).toBeInTheDocument();
 
-    // Navigate down
+    // 아래로 탐색
     await user.keyboard('{ArrowDown}'); // Apple (highlighted)
 
-    // We can't easily check highlighted state without implementation details or aria-activedescendant
-    // But we can check if selecting works after navigation
+    // aria-activedescendant가 설정되었는지 확인
+    const appleOption = screen.getByRole('option', { name: 'Apple' });
+    expect(trigger).toHaveAttribute('aria-activedescendant', appleOption.id);
 
     await user.keyboard('{Enter}');
     expect(screen.getByRole('button')).toHaveTextContent('Apple');

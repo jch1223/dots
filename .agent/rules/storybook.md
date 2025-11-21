@@ -1,6 +1,6 @@
 ---
 trigger: glob
-globs: **/*.test.ts, **/__tests__/**/*.ts
+globs: **/*.stories.ts, **/*.stories.tsx
 ---
 
 - **Storybook 스토리 파일 구조**

@@ -14,7 +14,6 @@ export interface SelectContextValue<T = string | number> {
   onChange?: (option: SelectOptionType<T>) => void;
   disabled?: boolean;
   triggerId?: string;
-  setTriggerId?: (id: string) => void;
   listboxId: string;
   highlightedId: string | null;
   setHighlightedId: (id: string | null) => void;
@@ -26,6 +25,7 @@ export interface SelectProps<T = string | number> {
   label?: string;
   placeholder?: string;
   disabled?: boolean;
+  triggerId?: string;
   children: ReactNode;
 }
 

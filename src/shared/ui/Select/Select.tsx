@@ -1,9 +1,9 @@
 import React, { type ComponentPropsWithoutRef, useEffect, useId, useRef, useState } from 'react';
 
+import { useOutsideClick } from './hooks/useClickOutside';
 import { compareValue } from './lib/compareValue';
 import { SelectContext } from './model/SelectContext';
 import { useSelect } from './model/useSelect';
-import { useOutsideClick } from '../../hooks/useClickOutside';
 
 import type {
   SelectContextValue,
@@ -22,13 +22,16 @@ export function Select<T = string | number>({
   value,
   onChange,
   disabled,
+  triggerId,
   children,
 }: SelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedId, setHighlightedId] = useState<string | null>(NO_HIGHLIGHT);
   const defaultTriggerId = useId();
   const listboxId = useId();
-  const [actualTriggerId, setActualTriggerId] = useState<string>(defaultTriggerId);
+
+  // triggerId prop이 있으면 그것을 사용하고, 없으면 자동 생성된 ID 사용
+  const finalTriggerId = triggerId || defaultTriggerId;
 
   const contextValue: SelectContextValue<T> = {
     isOpen,
@@ -36,8 +39,7 @@ export function Select<T = string | number>({
     value,
     onChange,
     disabled,
-    triggerId: actualTriggerId,
-    setTriggerId: setActualTriggerId,
+    triggerId: finalTriggerId,
     listboxId,
     highlightedId,
     setHighlightedId,
@@ -62,19 +64,15 @@ export function SelectLabel({ children, ...props }: SelectLabelProps) {
 }
 
 // SelectTrigger
-export function SelectTrigger({ onClick, className, id, label, ...props }: SelectTriggerProps) {
-  const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId, listboxId } = useSelect();
+export function SelectTrigger({
+  onClick,
+  onKeyDown,
+  className,
+  label,
+  ...props
+}: Omit<SelectTriggerProps, 'id'>) {
+  const { isOpen, setIsOpen, value, disabled, triggerId, listboxId, highlightedId } = useSelect();
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  // 실제 사용되는 id 값을 계산
-  const actualId = id || triggerId;
-
-  // SelectTrigger에서만 id를 지정할 수 있으므로, 렌더링 시점에 컨텍스트 업데이트
-  React.useLayoutEffect(() => {
-    if (setTriggerId && actualId) {
-      setTriggerId(actualId);
-    }
-  }, [actualId, setTriggerId]);
 
   // 리스트가 닫힐 때 포커스를 버튼으로 이동
   useEffect(() => {
@@ -110,6 +108,8 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
         }
         break;
     }
+
+    onKeyDown?.(e);
   };
 
   // 표시할 텍스트 결정: value가 있으면 value.label, 없으면 label prop 또는 기본값
@@ -119,13 +119,14 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
     <button
       ref={buttonRef}
       type="button"
-      id={actualId}
+      id={triggerId}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       disabled={disabled}
       aria-haspopup="listbox"
       aria-expanded={isOpen}
       aria-controls={listboxId}
+      aria-activedescendant={highlightedId || undefined}
       data-state={isOpen ? 'open' : 'closed'}
       data-disabled={disabled ? 'true' : undefined}
       aria-disabled={disabled}
