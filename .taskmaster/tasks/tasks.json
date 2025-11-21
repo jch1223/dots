@@ -314,11 +314,12 @@
         "dependencies": [
           "1"
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [],
         "complexity": 4,
         "recommendedSubtasks": 3,
-        "expansionPrompt": "`document.body`에 자식 요소를 렌더링하는 React Portal 래퍼 컴포넌트 구현, `isOpen` prop에 따라 렌더링 여부를 결정하는 `Modal` 컴포넌트 기본 구조 생성, `ModalBackdrop`과 `ModalContent`의 기본 레이아웃 및 스타일링 작업으로 분리해 주세요."
+        "expansionPrompt": "`document.body`에 자식 요소를 렌더링하는 React Portal 래퍼 컴포넌트 구현, `isOpen` prop에 따라 렌더링 여부를 결정하는 `Modal` 컴포넌트 기본 구조 생성, `ModalBackdrop`과 `ModalContent`의 기본 레이아웃 및 스타일링 작업으로 분리해 주세요.",
+        "updatedAt": "2025-11-21T10:45:58.397Z"
       },
       {
         "id": "10",
@@ -538,7 +539,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-21T10:44:08.045Z",
+      "lastModified": "2025-11-21T10:45:58.398Z",
       "taskCount": 15,
       "completedCount": 8,
       "tags": [
