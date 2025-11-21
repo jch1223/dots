@@ -108,6 +108,8 @@ export function SelectTrigger({
         }
         break;
     }
+
+    onKeyDown?.(e);
   };
 
   // 표시할 텍스트 결정: value가 있으면 value.label, 없으면 label prop 또는 기본값
