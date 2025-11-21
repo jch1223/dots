@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
 
 import {
@@ -11,8 +11,12 @@ import {
   SelectTrigger,
 } from './Select';
 
-import type { SelectOptionType } from './model/types';
+import type { SelectOptionType, SelectProps } from './model/types';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+
+type SelectStoryProps = Omit<SelectProps, 'children'> & {
+  children?: React.ReactNode;
+};
 
 const meta = {
   title: 'shared/Select',
@@ -45,41 +49,38 @@ const meta = {
 } satisfies Meta<typeof Select>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<SelectStoryProps>;
+
+// 공통 스타일 정의
+const triggerClassName =
+  'flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-state-open:border-blue-500 data-state-open:ring-2 data-state-open:ring-blue-500';
+const popupClassName =
+  'absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg';
+const optionClassName =
+  'cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600 data-[selected=true]:data-[highlighted=true]:bg-blue-100';
 
 const DefaultSelect: Story['render'] = (args) => {
-  const typedArgs = args as {
-    value?: SelectOptionType;
-    options: SelectOptionType[];
-    disabled?: boolean;
-    label?: string;
-  };
-  const [value, setValue] = useState<SelectOptionType | undefined>(typedArgs.value);
+  const [value, setValue] = useState<SelectOptionType | undefined>();
 
   return (
     <div className="w-64">
-      <Select
-        value={value}
-        onChange={(option) => setValue(option)}
-        options={typedArgs.options}
-        disabled={typedArgs.disabled}
-      >
+      <Select value={value} onChange={setValue} disabled={args.disabled}>
         <div className="relative">
-          <SelectTrigger
-            label={typedArgs.label}
-            className="flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-state-open:border-blue-500 data-state-open:ring-2 data-state-open:ring-blue-500"
-          />
-          <SelectPopup className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
+          <SelectTrigger label={args.label || '과일'} className={triggerClassName} />
+          <SelectPopup className={popupClassName}>
             <SelectList className="max-h-60 overflow-auto py-1">
-              {typedArgs.options.map((option, index) => (
-                <SelectOption
-                  key={option.value}
-                  option={option}
-                  disabled={option.disabled}
-                  index={index}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600 data-[selected=true]:data-[highlighted=true]:bg-blue-100"
-                />
-              ))}
+              <SelectOption
+                option={{ value: 'option1', label: '옵션 1' }}
+                className={optionClassName}
+              />
+              <SelectOption
+                option={{ value: 'option2', label: '옵션 2' }}
+                className={optionClassName}
+              />
+              <SelectOption
+                option={{ value: 'option3', label: '옵션 3' }}
+                className={optionClassName}
+              />
             </SelectList>
           </SelectPopup>
         </div>
@@ -91,14 +92,8 @@ const DefaultSelect: Story['render'] = (args) => {
 export const Default: Story = {
   render: DefaultSelect,
   args: {
-    value: undefined,
-    options: [
-      { value: 'option1', label: '옵션 1' },
-      { value: 'option2', label: '옵션 2' },
-      { value: 'option3', label: '옵션 3' },
-    ],
     label: '라벨입니다',
-  } as Story['args'],
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button');
@@ -127,27 +122,16 @@ export const Default: Story = {
 export const WithLabel: Story = {
   render: DefaultSelect,
   args: {
-    value: undefined,
-    options: [
-      { value: 'option1', label: '옵션 1' },
-      { value: 'option2', label: '옵션 2' },
-      { value: 'option3', label: '옵션 3' },
-    ],
     label: '라벨입니다',
-  } as Story['args'],
+  },
 };
 
 export const Disabled: Story = {
   render: DefaultSelect,
   args: {
-    value: undefined,
-    options: [
-      { value: 'option1', label: '옵션 1' },
-      { value: 'option2', label: '옵션 2' },
-      { value: 'option3', label: '옵션 3' },
-    ],
     disabled: true,
-  } as Story['args'],
+    label: '라벨입니다',
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button');
@@ -162,17 +146,43 @@ export const Disabled: Story = {
   },
 };
 
+const DisabledOptionSelect: Story['render'] = (args) => {
+  const [value, setValue] = useState<SelectOptionType | undefined>();
+
+  return (
+    <div className="w-64">
+      <Select value={value} onChange={setValue} disabled={args.disabled}>
+        <div className="relative">
+          <SelectTrigger label={args.label || '과일'} className={triggerClassName} />
+          <SelectPopup className={popupClassName}>
+            <SelectList className="max-h-60 overflow-auto py-1">
+              <SelectOption
+                option={{ value: 'option1', label: '옵션 1' }}
+                className={optionClassName}
+              />
+              <SelectOption
+                option={{ value: 'option2', label: '옵션 2' }}
+                disabled
+                className={optionClassName}
+              />
+              <SelectOption
+                option={{ value: 'option3', label: '옵션 3' }}
+                className={optionClassName}
+              />
+            </SelectList>
+          </SelectPopup>
+        </div>
+      </Select>
+    </div>
+  );
+};
+
 export const WithDisabledOption: Story = {
-  render: DefaultSelect,
+  render: DisabledOptionSelect,
   args: {
-    value: undefined,
-    options: [
-      { value: 'option1', label: '옵션 1' },
-      { value: 'option2', label: '옵션 2', disabled: true },
-      { value: 'option3', label: '옵션 3' },
-    ],
     disabled: false,
-  } as Story['args'],
+    label: '라벨입니다',
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button');
@@ -200,61 +210,43 @@ export const WithDisabledOption: Story = {
   },
 };
 
-// 그룹 레이블이 있는 셀렉트를 위한 렌더 함수
 const GroupSelect: Story['render'] = (args) => {
-  const typedArgs = args as {
-    value?: SelectOptionType;
-    options: SelectOptionType[];
-    disabled?: boolean;
-    label?: string;
-  };
-  const [value, setValue] = useState<SelectOptionType | undefined>(typedArgs.value);
+  const [value, setValue] = useState<SelectOptionType | undefined>();
 
   return (
     <div className="w-64">
-      <Select
-        value={value}
-        onChange={(option) => setValue(option)}
-        options={typedArgs.options}
-        disabled={typedArgs.disabled}
-      >
-        {typedArgs.label && <SelectLabel>{typedArgs.label}</SelectLabel>}
+      <Select value={value} onChange={setValue} disabled={args.disabled}>
+        {args.label && <SelectLabel>{args.label}</SelectLabel>}
         <div className="relative">
-          <SelectTrigger className="flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-state-open:border-blue-500 data-state-open:ring-2 data-state-open:ring-blue-500" />
-          <SelectPopup className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
+          <SelectTrigger className={triggerClassName} />
+          <SelectPopup className={popupClassName}>
             <SelectList className="max-h-60 overflow-auto py-1">
               <SelectGroup label="과일">
                 <SelectOption
                   option={{ value: 'apple', label: '사과' }}
-                  index={0}
-                  className="data-[selected=true][data-highlighted=true]:bg-[rgba(107,114,128,0.15)] cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className={optionClassName}
                 />
                 <SelectOption
                   option={{ value: 'banana', label: '바나나' }}
-                  index={1}
-                  className="data-[selected=true][data-highlighted=true]:bg-[rgba(107,114,128,0.15)] cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className={optionClassName}
                 />
                 <SelectOption
                   option={{ value: 'orange', label: '오렌지' }}
-                  index={2}
-                  className="data-[selected=true][data-highlighted=true]:bg-[rgba(107,114,128,0.15)] cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className={optionClassName}
                 />
               </SelectGroup>
               <SelectGroup label="채소">
                 <SelectOption
                   option={{ value: 'carrot', label: '당근' }}
-                  index={3}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className={optionClassName}
                 />
                 <SelectOption
                   option={{ value: 'tomato', label: '토마토' }}
-                  index={4}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className={optionClassName}
                 />
                 <SelectOption
                   option={{ value: 'lettuce', label: '상추' }}
-                  index={5}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className={optionClassName}
                 />
               </SelectGroup>
             </SelectList>
@@ -269,16 +261,8 @@ export const WithGroups: Story = {
   render: GroupSelect,
   args: {
     value: undefined,
-    options: [
-      { value: 'apple', label: '사과' },
-      { value: 'banana', label: '바나나' },
-      { value: 'orange', label: '오렌지' },
-      { value: 'carrot', label: '당근' },
-      { value: 'tomato', label: '토마토' },
-      { value: 'lettuce', label: '상추' },
-    ],
-    children: null,
-  } as Story['args'],
+    label: '식료품',
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button');

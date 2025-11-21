@@ -1,11 +1,6 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 
 import { compareValue } from './lib/compareValue';
-import {
-  getFirstEnabledIndex,
-  getLastEnabledIndex,
-  getNextEnabledIndex,
-} from './lib/getNextEnabledIndex';
 import { SelectContext } from './model/SelectContext';
 import { useSelect } from './model/useSelect';
 
@@ -20,17 +15,16 @@ import type {
   SelectTriggerProps,
 } from './model/types';
 
-const NO_HIGHLIGHT = -1;
+const NO_HIGHLIGHT = null;
 
 export function Select<T = string | number>({
   value,
   onChange,
-  options,
   disabled,
   children,
 }: SelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(NO_HIGHLIGHT);
+  const [highlightedId, setHighlightedId] = useState<string | null>(NO_HIGHLIGHT);
   const defaultTriggerId = useId();
   const listboxId = useId();
   const [actualTriggerId, setActualTriggerId] = useState<string>(defaultTriggerId);
@@ -40,13 +34,12 @@ export function Select<T = string | number>({
     setIsOpen,
     value,
     onChange,
-    options,
     disabled,
     triggerId: actualTriggerId,
     setTriggerId: setActualTriggerId,
     listboxId,
-    highlightedIndex,
-    setHighlightedIndex,
+    highlightedId,
+    setHighlightedId,
   };
 
   return (
@@ -69,18 +62,7 @@ export function SelectLabel({ children, ...props }: SelectLabelProps) {
 
 // SelectTrigger
 export function SelectTrigger({ onClick, className, id, label, ...props }: SelectTriggerProps) {
-  const {
-    isOpen,
-    setIsOpen,
-    value,
-    disabled,
-    triggerId,
-    setTriggerId,
-    listboxId,
-    options,
-    highlightedIndex,
-    setHighlightedIndex,
-  } = useSelect();
+  const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId, listboxId } = useSelect();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // 실제 사용되는 id 값을 계산
@@ -112,38 +94,11 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
     switch (e.key) {
       case 'Enter':
       case ' ': // Space
-        e.preventDefault();
-        if (!isOpen) {
-          setIsOpen(true);
-          setHighlightedIndex(getFirstEnabledIndex(options));
-        }
-        break;
-
       case 'ArrowDown':
-        e.preventDefault();
-        if (!isOpen) {
-          setIsOpen(true);
-          setHighlightedIndex(getFirstEnabledIndex(options));
-        } else {
-          // 리스트가 이미 열려있으면 하이라이트 이동
-          const nextIndex = getNextEnabledIndex(options, highlightedIndex, 'next');
-          if (nextIndex !== NO_HIGHLIGHT) {
-            setHighlightedIndex(nextIndex);
-          }
-        }
-        break;
-
       case 'ArrowUp':
         e.preventDefault();
         if (!isOpen) {
           setIsOpen(true);
-          setHighlightedIndex(getLastEnabledIndex(options));
-        } else {
-          // 리스트가 이미 열려있으면 하이라이트 이동
-          const prevIndex = getNextEnabledIndex(options, highlightedIndex, 'prev');
-          if (prevIndex !== NO_HIGHLIGHT) {
-            setHighlightedIndex(prevIndex);
-          }
         }
         break;
 
@@ -151,7 +106,6 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
         if (isOpen) {
           e.preventDefault();
           setIsOpen(false);
-          setHighlightedIndex(NO_HIGHLIGHT);
         }
         break;
     }
@@ -198,69 +152,76 @@ export function SelectPopup({ children, ...props }: SelectPopupProps) {
 
 // SelectList
 export function SelectList({ children, ...props }: SelectListProps) {
-  const {
-    options,
-    triggerId,
-    listboxId,
-    highlightedIndex,
-    setHighlightedIndex,
-    onChange,
-    setIsOpen,
-    isOpen,
-  } = useSelect();
+  const { triggerId, listboxId, highlightedId, setHighlightedId, setIsOpen } = useSelect();
   const listRef = useRef<HTMLUListElement>(null);
 
   // 리스트가 열릴 때 포커스를 리스트로 이동
   useEffect(() => {
-    if (isOpen && listRef.current) {
+    if (listRef.current) {
       listRef.current.focus();
     }
-  }, [isOpen]);
+  }, []);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {
+    if (!listRef.current) return;
+
+    const options = Array.from(
+      listRef.current.querySelectorAll('[role="option"]:not([aria-disabled="true"])'),
+    ) as HTMLElement[];
+
+    if (options.length === 0) return;
+
+    const currentIndex = highlightedId ? options.findIndex((opt) => opt.id === highlightedId) : -1;
+
     switch (event.key) {
       case 'ArrowDown': {
-        const nextIndex = getNextEnabledIndex(options, highlightedIndex, 'next');
-        if (nextIndex !== NO_HIGHLIGHT) {
-          setHighlightedIndex(nextIndex);
+        event.preventDefault();
+        const nextIndex = currentIndex + 1;
+        if (nextIndex < options.length) {
+          setHighlightedId(options[nextIndex].id);
+          options[nextIndex].scrollIntoView?.({ block: 'nearest' });
+        } else {
+          // Loop to start
+          setHighlightedId(options[0].id);
+          options[0].scrollIntoView?.({ block: 'nearest' });
         }
         break;
       }
 
       case 'ArrowUp': {
-        const prevIndex = getNextEnabledIndex(options, highlightedIndex, 'prev');
-        if (prevIndex !== NO_HIGHLIGHT) {
-          setHighlightedIndex(prevIndex);
+        event.preventDefault();
+        const prevIndex = currentIndex - 1;
+        if (prevIndex >= 0) {
+          setHighlightedId(options[prevIndex].id);
+          options[prevIndex].scrollIntoView?.({ block: 'nearest' });
+        } else {
+          // Loop to end
+          setHighlightedId(options[options.length - 1].id);
+          options[options.length - 1].scrollIntoView?.({ block: 'nearest' });
         }
         break;
       }
 
       case 'Home':
-        setHighlightedIndex(getFirstEnabledIndex(options));
+        event.preventDefault();
+        setHighlightedId(options[0].id);
+        options[0].scrollIntoView?.({ block: 'nearest' });
         break;
 
       case 'End':
-        setHighlightedIndex(getLastEnabledIndex(options));
+        event.preventDefault();
+        setHighlightedId(options[options.length - 1].id);
+        options[options.length - 1].scrollIntoView?.({ block: 'nearest' });
         break;
 
       case 'Enter': {
-        if (highlightedIndex >= 0) {
-          // children이 있을 때는 DOM에서 실제 하이라이트된 옵션을 찾아서 클릭
-          if (children && listRef.current) {
-            const highlightedOption = listRef.current.querySelector(
-              `[role="option"][data-highlighted="true"]`,
-            ) as HTMLElement;
-            if (highlightedOption && !highlightedOption.hasAttribute('aria-disabled')) {
-              highlightedOption.click();
-            }
-          } else if (highlightedIndex < options.length) {
-            // children이 없을 때는 options 배열에서 찾기
-            const selectedOption = options[highlightedIndex];
-            if (!selectedOption.disabled) {
-              onChange?.(selectedOption);
-              setIsOpen(false);
-              setHighlightedIndex(NO_HIGHLIGHT);
-            }
+        event.preventDefault();
+        if (highlightedId) {
+          const highlightedOption = listRef.current.querySelector(
+            `[id="${CSS.escape(highlightedId)}"]`,
+          ) as HTMLElement;
+          if (highlightedOption) {
+            highlightedOption.click();
           }
         }
         break;
@@ -268,29 +229,11 @@ export function SelectList({ children, ...props }: SelectListProps) {
 
       case 'Escape':
         setIsOpen(false);
-        setHighlightedIndex(NO_HIGHLIGHT);
+        setHighlightedId(null);
         break;
     }
   };
 
-  // children이 있으면 사용자가 직접 렌더링한 것으로 간주
-  if (children) {
-    return (
-      <ul
-        ref={listRef}
-        role="listbox"
-        id={listboxId}
-        aria-labelledby={triggerId}
-        tabIndex={-1}
-        onKeyDown={handleKeyDown}
-        {...props}
-      >
-        {children}
-      </ul>
-    );
-  }
-
-  // children이 없으면 options를 자동으로 렌더링
   return (
     <ul
       ref={listRef}
@@ -301,14 +244,7 @@ export function SelectList({ children, ...props }: SelectListProps) {
       onKeyDown={handleKeyDown}
       {...props}
     >
-      {options.map((option, index) => (
-        <SelectOption
-          key={String(option.value)}
-          option={option}
-          disabled={option.disabled}
-          index={index}
-        />
-      ))}
+      {children}
     </ul>
   );
 }
@@ -324,8 +260,10 @@ export function SelectGroup({ label, children, className, ...props }: SelectGrou
 }
 
 // SelectOption
-export function SelectOption({ option, onClick, disabled, index, ...props }: SelectOptionProps) {
-  const { value, onChange, setIsOpen, highlightedIndex, setHighlightedIndex } = useSelect();
+export function SelectOption({ option, onClick, disabled, id, ...props }: SelectOptionProps) {
+  const { value, onChange, setIsOpen, highlightedId, setHighlightedId } = useSelect();
+  const generatedId = useId();
+  const optionId = id || generatedId;
 
   const isOptionDisabled = disabled || option.disabled;
 
@@ -337,21 +275,22 @@ export function SelectOption({ option, onClick, disabled, index, ...props }: Sel
 
     onChange?.(option);
     setIsOpen(false);
-    setHighlightedIndex(NO_HIGHLIGHT);
+    setHighlightedId(null);
     onClick?.(event);
   };
 
   const handleMouseEnter = () => {
-    if (!isOptionDisabled && index !== undefined) {
-      setHighlightedIndex(index);
+    if (!isOptionDisabled) {
+      setHighlightedId(optionId);
     }
   };
 
   const isSelected = value !== undefined && compareValue(option.value, value.value);
-  const isHighlighted = index === highlightedIndex;
+  const isHighlighted = optionId === highlightedId;
 
   return (
     <li
+      id={optionId}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       data-selected={isSelected}
