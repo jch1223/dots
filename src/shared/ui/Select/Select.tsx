@@ -63,7 +63,8 @@ export function SelectLabel({ children, ...props }: SelectLabelProps) {
 
 // SelectTrigger
 export function SelectTrigger({ onClick, className, id, label, ...props }: SelectTriggerProps) {
-  const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId, listboxId } = useSelect();
+  const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId, listboxId, highlightedId } =
+    useSelect();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // 실제 사용되는 id 값을 계산
@@ -126,6 +127,7 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
       aria-haspopup="listbox"
       aria-expanded={isOpen}
       aria-controls={listboxId}
+      aria-activedescendant={highlightedId || undefined}
       data-state={isOpen ? 'open' : 'closed'}
       data-disabled={disabled ? 'true' : undefined}
       aria-disabled={disabled}
