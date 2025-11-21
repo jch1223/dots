@@ -28,6 +28,12 @@ npm run build
 npm run preview
 ```
 
+### 스토리북
+
+```bash
+npm run storybook
+```
+
 ## 사용된 기술 스택
 
 - **React** - UI 라이브러리
