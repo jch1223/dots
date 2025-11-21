@@ -24,6 +24,7 @@ export interface ModalContextValue {
   closeOnBackdropClick?: boolean;
   closeOnEsc?: boolean;
   isVisible?: boolean;
+  duration: number;
 }
 
 export interface ModalCloseProps extends React.ComponentPropsWithoutRef<'button'> {
