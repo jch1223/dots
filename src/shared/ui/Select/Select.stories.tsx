@@ -3,6 +3,7 @@ import { expect, userEvent, within } from 'storybook/test';
 
 import {
   Select,
+  SelectContainer,
   SelectGroup,
   SelectLabel,
   SelectList,
@@ -283,5 +284,62 @@ export const WithGroups: Story = {
     // 팝업이 닫히고 값이 변경되었는지 확인
     expect(canvasElement.querySelector('[role="listbox"]')).not.toBeInTheDocument();
     expect(trigger).toHaveTextContent('사과');
+  },
+};
+
+const ClickOutsideSelect: Story['render'] = (args) => {
+  const [value, setValue] = useState<SelectOptionType | undefined>();
+
+  return (
+    <div className="w-64">
+      <Select value={value} onChange={setValue} disabled={args.disabled}>
+        <SelectContainer className="relative">
+          <SelectTrigger label={args.label || '외부 클릭 테스트'} className={triggerClassName} />
+          <SelectPopup className={popupClassName}>
+            <SelectList className="max-h-60 overflow-auto py-1">
+              <SelectOption
+                option={{ value: 'option1', label: '옵션 1' }}
+                className={optionClassName}
+              />
+              <SelectOption
+                option={{ value: 'option2', label: '옵션 2' }}
+                className={optionClassName}
+              />
+              <SelectOption
+                option={{ value: 'option3', label: '옵션 3' }}
+                className={optionClassName}
+              />
+            </SelectList>
+          </SelectPopup>
+        </SelectContainer>
+      </Select>
+      <div className="mt-4 rounded border border-dashed border-gray-400 p-4 text-sm text-gray-500">
+        SelectContainer를 사용하면 외부 클릭 시 자동으로 닫힙니다.
+      </div>
+    </div>
+  );
+};
+
+export const WithClickOutside: Story = {
+  render: ClickOutsideSelect,
+  args: {
+    label: '외부 클릭 테스트',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button');
+
+    // 팝업 열기
+    await userEvent.click(trigger);
+    expect(canvasElement.querySelector('[role="listbox"]')).toBeInTheDocument();
+
+    // 외부 클릭 (설명 텍스트 영역 클릭)
+    const outsideArea = canvas.getByText(
+      'SelectContainer를 사용하면 외부 클릭 시 자동으로 닫힙니다.',
+    );
+    await userEvent.click(outsideArea);
+
+    // 팝업이 닫혔는지 확인
+    expect(canvasElement.querySelector('[role="listbox"]')).not.toBeInTheDocument();
   },
 };

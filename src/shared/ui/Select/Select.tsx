@@ -1,8 +1,9 @@
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { type ComponentPropsWithoutRef, useEffect, useId, useRef, useState } from 'react';
 
 import { compareValue } from './lib/compareValue';
 import { SelectContext } from './model/SelectContext';
 import { useSelect } from './model/useSelect';
+import { useOutsideClick } from '../../hooks/useClickOutside';
 
 import type {
   SelectContextValue,
@@ -148,6 +149,17 @@ export function SelectPopup({ children, ...props }: SelectPopupProps) {
   }
 
   return <div {...props}>{children}</div>;
+}
+
+export function SelectContainer({ children, ...props }: ComponentPropsWithoutRef<'div'>) {
+  const { setIsOpen } = useSelect();
+  const ref = useOutsideClick(() => setIsOpen(false));
+
+  return (
+    <div ref={ref} {...props}>
+      {children}
+    </div>
+  );
 }
 
 // SelectList

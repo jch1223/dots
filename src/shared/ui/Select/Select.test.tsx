@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   Select,
+  SelectContainer,
   SelectLabel,
   SelectList,
   SelectOption,
@@ -131,6 +132,40 @@ describe('Select Component', () => {
     expect(trigger).toBeDisabled();
 
     await user.click(trigger);
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('closes when clicking outside with SelectContainer', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <div>
+        <Select value={undefined} onChange={() => {}}>
+          <SelectContainer data-testid="select-container">
+            <SelectTrigger label="외부 클릭 테스트" />
+            <SelectPopup>
+              <SelectList>
+                <SelectOption option={{ value: 'option1', label: '옵션 1' }} />
+                <SelectOption option={{ value: 'option2', label: '옵션 2' }} />
+              </SelectList>
+            </SelectPopup>
+          </SelectContainer>
+        </Select>
+        <div data-testid="outside-area">외부 영역</div>
+      </div>,
+    );
+
+    const trigger = screen.getByRole('button', { name: /외부 클릭 테스트/i });
+
+    // 팝업 열기
+    await user.click(trigger);
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    // 외부 영역 클릭
+    const outsideArea = screen.getByTestId('outside-area');
+    await user.click(outsideArea);
+
+    // 팝업이 닫혔는지 확인
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 });
