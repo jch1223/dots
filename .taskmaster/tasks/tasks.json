@@ -22,9 +22,7 @@
         "details": "React.createContext를 사용하여 Select 컴포넌트의 상태(선택된 값, 팝업 열림 여부, 옵션 목록 등)를 하위 컴포넌트와 공유합니다. `useSelect` 같은 커스텀 훅을 만들어 상태 관리 로직을 캡슐화합니다. `SelectProps`는 제네릭 `<T>`를 사용하여 `value`, `onChange`, `options`의 타입이 일관되도록 강제합니다.\n\n// Select.tsx\ninterface SelectContextValue<T> {\n  isOpen: boolean;\n  setIsOpen: (open: boolean) => void;\n  value?: T;\n  onChange?: (value: T) => void;\n  options: SelectOption<T>[];\n  // ...\n}\n\nconst SelectContext = React.createContext<SelectContextValue<any> | null>(null);\n\nexport function Select<T>({ value, onChange, options, ... }) {\n  const [isOpen, setIsOpen] = useState(false);\n  // ...\n  return <SelectContext.Provider value={{...}}>{children}</SelectContext.Provider>;\n}",
         "testStrategy": "Storybook에 기본 Select 컴포넌트를 렌더링합니다. Trigger를 클릭했을 때 Popup이 열리고 닫히는지 확인합니다. 외부에서 전달된 `value`가 Trigger에 올바르게 표시되는지 확인합니다.",
         "priority": "high",
-        "dependencies": [
-          "1"
-        ],
+        "dependencies": ["1"],
         "status": "done",
         "subtasks": [
           {
@@ -41,9 +39,7 @@
             "id": 2,
             "title": "useSelect 커스텀 훅 구현",
             "description": "하위 컴포넌트에서 SelectContext에 쉽게 접근할 수 있도록 useSelect 커스텀 훅을 구현합니다. Context 값이 null일 경우 에러를 발생시켜 잘못된 사용을 방지합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "useContext(SelectContext)를 사용하여 컨텍스트 값을 가져옵니다. 값이 null이면 'useSelect must be used within a Select provider'와 같은 에러 메시지를 던져 개발자 실수를 방지합니다.",
             "status": "done",
             "testStrategy": "Select 컴포넌트 외부에서 useSelect 훅을 호출했을 때 의도한 에러가 발생하는지 단위 테스트를 작성하여 확인합니다.",
@@ -53,9 +49,7 @@
             "id": 3,
             "title": "Select 루트 컴포넌트 및 Context Provider 구현",
             "description": "Select 컴포넌트의 기본 구조를 구현하고, isOpen 상태를 내부적으로 관리합니다. 제네릭 props를 받고, SelectContext.Provider를 통해 상태와 함수들을 하위 컴포넌트에 제공합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "useState를 사용하여 isOpen 상태를 관리합니다. 외부로부터 value(Controlled), onChange, options 등의 props를 받아 SelectContext.Provider의 value로 하위 컴포넌트에 전달합니다. setIsOpen 함수도 함께 제공합니다.",
             "status": "done",
             "testStrategy": "Storybook 또는 테스트 환경에서 Select 컴포넌트가 자식 요소를 오류 없이 렌더링하는지 확인합니다. isOpen 상태가 내부적으로 관리되는지 간단한 인터랙션을 통해 검증합니다.",
@@ -65,10 +59,7 @@
             "id": 4,
             "title": "SelectTrigger, SelectPopup, SelectOption 기본 컴포넌트 구현",
             "description": "Select의 하위 컴포넌트인 SelectTrigger, SelectPopup, SelectOption의 기본 구조를 구현합니다. 각 컴포넌트는 useSelect 훅을 사용하여 필요한 상태와 함수에 접근하여 동작합니다.",
-            "dependencies": [
-              2,
-              3
-            ],
+            "dependencies": [2, 3],
             "details": "SelectTrigger는 클릭 시 useSelect의 setIsOpen을 호출하여 팝업을 토글합니다. SelectPopup은 isOpen 상태에 따라 조건부로 렌더링됩니다. SelectOption은 전달된 데이터를 기반으로 렌더링되고, 클릭 시 onChange를 호출하는 기본 로직을 포함합니다.",
             "status": "done",
             "testStrategy": "Storybook에서 SelectTrigger를 클릭했을 때 SelectPopup이 나타나고 사라지는지 확인합니다. SelectOption을 클릭했을 때 onChange 핸들러가 호출되는지 확인합니다.",
@@ -86,9 +77,7 @@
         "details": "`tailwind.config.js`에 설정한 `data-*` variant를 활용하여 상태별 스타일을 적용합니다. Trigger에는 `data-state={isOpen ? 'open' : 'closed'}` 속성을, Option에는 `data-highlighted` 속성을 추가하여 CSS에서 상태를 타겟팅할 수 있도록 합니다. 비활성화 상태는 `disabled` prop에 따라 `aria-disabled='true'`와 `data-disabled='true'` 속성을 추가하고, `opacity-50`과 `cursor-not-allowed` 같은 클래스를 적용합니다.",
         "testStrategy": "Storybook에서 `disabled` prop을 조작하여 비활성화 상태의 스타일을 확인합니다. Trigger와 Option에 마우스를 올렸을 때(hover)와 키보드로 포커스했을 때(focus) 스타일이 변경되는지 시각적으로 검증합니다.",
         "priority": "medium",
-        "dependencies": [
-          "2"
-        ],
+        "dependencies": ["2"],
         "status": "done",
         "subtasks": [
           {
@@ -133,10 +122,7 @@
         "details": "Trigger의 `onClick` 이벤트 핸들러에서 `setIsOpen(!isOpen)`을 호출합니다. `SelectOption`의 `onClick` 이벤트 핸들러에서 컨텍스트의 `onChange(option.value)`를 호출하고, `setIsOpen(false)`를 호출하여 팝업을 닫습니다. `useClickOutside` 훅을 `SelectPopup`을 감싸는 컨테이너에 적용하여 외부 클릭 시 `setIsOpen(false)`가 호출되도록 합니다.",
         "testStrategy": "Storybook에서 Trigger를 클릭하여 팝업을 엽니다. 특정 Option을 클릭했을 때 `onChange` 액션이 Storybook의 Actions 탭에 기록되고, 선택된 값으로 Trigger의 내용이 변경되며 팝업이 닫히는지 확인합니다. 팝업이 열린 상태에서 컴포넌트 외부 영역을 클릭했을 때 팝업이 닫히는지 확인합니다.",
         "priority": "high",
-        "dependencies": [
-          "1",
-          "2"
-        ],
+        "dependencies": ["1", "2"],
         "status": "done",
         "subtasks": [],
         "complexity": 4,
@@ -151,9 +137,7 @@
         "details": "`SelectPopup`에 `keydown` 이벤트 리스너를 추가합니다. `useState`로 하이라이트된 옵션의 인덱스를 관리합니다.\n- `ArrowDown`/`ArrowUp`: 하이라이트 인덱스를 변경하고, `e.preventDefault()`를 호출하여 스크롤을 막습니다.\n- `Enter`: 현재 하이라이트된 옵션을 선택(`onChange` 호출)하고 팝업을 닫습니다.\n- `Escape`: 팝업을 닫고, 포커스를 Trigger로 복귀시킵니다.\n- 팝업이 열리면 스페이스바나 화살표 키로도 열 수 있도록 Trigger에도 `keydown` 핸들러를 추가합니다.",
         "testStrategy": "Trigger에 포커스한 상태에서 Enter 또는 화살표 키로 팝업을 엽니다. 화살표 키로 옵션 간 이동이 가능한지, 하이라이트 스타일이 적용되는지 확인합니다. Enter 키로 옵션 선택이 되는지, Esc 키로 팝업이 닫히는지 확인합니다.",
         "priority": "high",
-        "dependencies": [
-          "4"
-        ],
+        "dependencies": ["4"],
         "status": "done",
         "subtasks": [
           {
@@ -171,9 +155,7 @@
             "id": 2,
             "title": "SelectPopup에서 화살표 키로 옵션 탐색 및 하이라이트 기능 구현",
             "description": "SelectPopup 내에서 위/아래 화살표 키를 사용하여 옵션 목록을 탐색하고, 현재 활성화된 옵션을 시각적으로 하이라이트하는 기능을 구현합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Select 컨텍스트에 하이라이트된 옵션의 인덱스를 관리하는 상태(highlightedIndex)를 추가합니다. SelectPopup에 keydown 이벤트 리스너를 추가하여 'ArrowDown'과 'ArrowUp' 키 입력 시 highlightedIndex를 업데이트합니다. 목록의 끝과 처음을 순환하는 로직을 포함해야 합니다.",
             "status": "done",
             "testStrategy": "팝업이 열린 상태에서 아래/위 화살표 키를 눌러 옵션 간 하이라이트가 이동하는지 확인합니다. 첫 번째 옵션에서 위 화살표를, 마지막 옵션에서 아래 화살표를 눌렀을 때 순환이 제대로 동작하는지 검증합니다.",
@@ -184,9 +166,7 @@
             "id": 3,
             "title": "Enter 키로 옵션 선택 및 Esc 키로 팝업 닫기 기능 구현",
             "description": "키보드 탐색 중 Enter 키를 누르면 하이라이트된 옵션이 선택되고 팝업이 닫히도록 하며, Esc 키를 누르면 팝업만 닫히고 포커스는 트리거로 돌아가도록 구현합니다.",
-            "dependencies": [
-              2
-            ],
+            "dependencies": [2],
             "details": "SelectPopup의 keydown 핸들러에 'Enter'와 'Escape' 키 처리를 추가합니다. 'Enter' 입력 시 컨텍스트의 onChange(options[highlightedIndex])를 호출하고 setIsOpen(false)를 실행합니다. 'Escape' 입력 시 setIsOpen(false)만 실행합니다. 포커스 복귀 로직은 별도 태스크(Task 7)와 연계하여 처리합니다.",
             "status": "done",
             "testStrategy": "화살표 키로 특정 옵션을 하이라이트한 후 Enter 키를 눌렀을 때 해당 옵션이 선택되고 팝업이 닫히는지 확인합니다. 팝업이 열린 상태에서 Esc 키를 눌렀을 때 팝업이 닫히는지 확인합니다.",
@@ -206,9 +186,7 @@
         "details": "React의 `useId` 훅을 사용하여 label, trigger, listbox에 대한 고유 ID를 생성하고 연결합니다.\n- **SelectLabel**: `htmlFor` 속성을 Trigger의 `id`와 연결합니다.\n- **SelectTrigger**: `role='combobox'`, `aria-haspopup='listbox'`, `aria-expanded={isOpen}`, `aria-controls` (popup id), `aria-labelledby` (label id)를 적용합니다.\n- **SelectPopup**: `role='listbox'`, `id`를 설정합니다.\n- **SelectOption**: `role='option'`, `aria-selected` (현재 선택된 옵션인지 여부)를 적용합니다. 키보드 네비게이션 시 포커스된 옵션에 `aria-activedescendant`를 Trigger에 동적으로 설정하는 방식을 사용합니다.",
         "testStrategy": "브라우저 개발자 도구의 Elements 탭에서 각 요소에 올바른 ARIA 속성이 동적으로 할당되는지 확인합니다. (예: 팝업 열릴 때 `aria-expanded`가 `true`로 변경되는지). 가능하다면 스크린 리더(VoiceOver, NVDA)를 사용하여 옵션을 탐색하고 선택하는 과정을 테스트합니다.",
         "priority": "high",
-        "dependencies": [
-          "5"
-        ],
+        "dependencies": ["5"],
         "status": "done",
         "subtasks": [
           {
@@ -226,9 +204,7 @@
             "id": 2,
             "title": "트리거 및 팝업에 정적/동적 ARIA 속성 적용",
             "description": "WAI-ARIA Combobox 패턴에 따라 `SelectTrigger`와 `SelectPopup`에 핵심적인 ARIA 역할(`role`)과 상태(`aria-haspopup`, `aria-expanded`) 속성을 적용합니다. 컴포넌트의 열림/닫힘 상태에 따라 `aria-expanded`가 동적으로 변경되도록 구현합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "`SelectTrigger`에 `role=\"combobox\"`와 `aria-haspopup=\"listbox\"`를 추가합니다. 컴포넌트의 열림 상태(`isOpen`)를 기반으로 `aria-expanded={isOpen}`을 설정합니다. `SelectPopup`에는 `role=\"listbox\"`를 적용합니다.",
             "status": "done",
             "testStrategy": "스크린 리더로 트리거에 접근했을 때 '콤보 상자'로 읽히는지, 팝업이 열렸을 때 '확장됨' 상태가, 닫혔을 때 '축소됨' 상태가 제대로 전달되는지 확인합니다. 개발자 도구에서 `aria-expanded` 값이 상태에 따라 `true`/`false`로 바뀌는지 검증합니다.",
@@ -239,9 +215,7 @@
             "id": 3,
             "title": "`SelectOption` 컴포넌트에 `role` 및 `aria-selected` 적용",
             "description": "`Select` 컴포넌트의 각 옵션이 스크린 리더에게 선택 가능한 항목임을 알리도록 `role`을 부여하고, 현재 선택된 옵션이 무엇인지 `aria-selected` 속성을 통해 명시적으로 표시합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "`SelectOption` 컴포넌트에 `role=\"option\"`을 설정합니다. 컨텍스트나 props로 전달된 현재 선택된 값과 해당 옵션의 값을 비교하여, 일치하는 경우 `aria-selected={true}`를, 그렇지 않은 경우 `aria-selected={false}`를 동적으로 설정합니다. 각 옵션에도 고유 `id`를 부여해야 합니다.",
             "status": "done",
             "testStrategy": "개발자 도구에서 각 옵션 요소에 `role=\"option\"`이 있는지, 현재 선택된 값에 해당하는 옵션에만 `aria-selected=\"true\"`가 적용되는지 확인합니다. 스크린 리더로 옵션을 탐색할 때 '선택됨' 상태가 올바르게 음성 안내되는지 테스트합니다.",
@@ -252,10 +226,7 @@
             "id": 4,
             "title": "키보드 탐색과 연동하여 `aria-activedescendant` 동적 관리",
             "description": "키보드 화살표 키로 옵션을 탐색할 때, 실제 DOM 포커스는 트리거에 유지하면서 스크린 리더가 현재 활성화된(하이라이트된) 옵션을 인지할 수 있도록 `SelectTrigger`의 `aria-activedescendant` 속성을 동적으로 업데이트합니다.",
-            "dependencies": [
-              1,
-              3
-            ],
+            "dependencies": [1, 3],
             "details": "키보드 네비게이션 로직(Task 5)에서 관리하는 하이라이트된 옵션의 고유 ID를 가져와 `SelectTrigger`의 `aria-activedescendant` 속성 값으로 설정합니다. 팝업이 닫히거나 포커스가 벗어나면 이 속성을 제거합니다. 이를 위해 각 `SelectOption`은 고유 `id`를 반드시 가져야 합니다.",
             "status": "done",
             "testStrategy": "팝업을 연 뒤 화살표 키로 옵션을 탐색하는 동안, 개발자 도구에서 `SelectTrigger` 요소의 `aria-activedescendant` 속성값이 현재 하이라이트된 옵션의 `id` 값으로 실시간 변경되는지 확인합니다. 스크린 리더 사용 시 화살표 키 이동에 따라 옵션 내용이 올바르게 읽히는지 테스트합니다.",
@@ -275,9 +246,7 @@
         "details": "팝업이 닫힐 때(`onClose`), 포커스가 원래 Trigger 버튼으로 돌아가도록 `triggerRef.current?.focus()`를 호출합니다. 키보드 네비게이션 시 실제 DOM 포커스는 Trigger에 그대로 두고, `aria-activedescendant` 속성을 사용하여 가상 포커스(하이라이트)를 옵션 리스트 내에서 이동시키는 것이 ARIA Combobox 패턴의 권장 사항입니다. 이를 통해 복잡한 포커스 이동 로직을 피할 수 있습니다.",
         "testStrategy": "Trigger를 클릭하여 팝업을 연 후 Esc 키를 눌러 닫았을 때, 키보드 포커스가 다시 Trigger 버튼으로 돌아오는지 확인합니다. 키보드 화살표로 옵션을 탐색하는 동안 실제 `document.activeElement`는 Trigger에 머물러 있는지 개발자 도구 콘솔에서 확인합니다.",
         "priority": "high",
-        "dependencies": [
-          "5"
-        ],
+        "dependencies": ["5"],
         "status": "done",
         "subtasks": [],
         "complexity": 4,
@@ -292,11 +261,7 @@
         "details": "`Select.stories.tsx` 파일을 생성합니다.\n- **Default**: 기본 사용법을 보여주는 스토리.\n- **Controlled**: `useState`를 사용하여 외부에서 `value`를 제어하고, `onChange`를 통해 상태를 업데이트하는 예제를 보여주는 스토리.\n- **Disabled**: `disabled` prop을 `true`로 설정하여 컴포넌트가 비활성화된 상태를 보여주는 스토리.\n- **WithLabelAndPlaceholder**: `label`과 `placeholder` prop을 사용한 예제를 보여주는 스토리. Storybook의 `args`와 `argTypes`를 사용하여 인터랙티브하게 props를 변경할 수 있도록 설정합니다.",
         "testStrategy": "Storybook UI에서 각 스토리가 의도된 대로 렌더링되고 작동하는지 확인합니다. Controls 애드온을 사용하여 props를 변경했을 때 컴포넌트가 올바르게 반응하는지 테스트합니다.",
         "priority": "medium",
-        "dependencies": [
-          "3",
-          "6",
-          "7"
-        ],
+        "dependencies": ["3", "6", "7"],
         "status": "done",
         "subtasks": [],
         "complexity": 3,
@@ -311,9 +276,7 @@
         "details": "React Portal (`ReactDOM.createPortal`)을 사용하여 Modal 컴포넌트를 `document.body`의 최상단에 렌더링하도록 구현합니다. 이는 z-index 문제를 방지하고 DOM 구조를 깔끔하게 유지하는 데 도움이 됩니다. `isOpen` prop이 `false`이면 `null`을 반환하여 컴포넌트를 렌더링하지 않습니다. 기본 스타일링을 위해 Tailwind CSS를 사용하여 backdrop과 content 영역을 구성합니다.",
         "testStrategy": "Storybook에서 `isOpen` prop을 토글하여 모달이 정상적으로 열리고 닫히는지 확인합니다. 개발자 도구에서 모달이 `<body>` 태그의 직계 자식으로 렌더링되는지 확인합니다.",
         "priority": "high",
-        "dependencies": [
-          "1"
-        ],
+        "dependencies": ["1"],
         "status": "done",
         "subtasks": [],
         "complexity": 4,
@@ -328,9 +291,7 @@
         "details": "`useEffect`를 사용하여 모달이 열려 있을 때(`isOpen`이 `true`) `window`에 `keydown` 이벤트 리스너를 추가합니다. `event.key === 'Escape'`일 때 `onClose()`를 호출합니다. 컴포넌트가 언마운트되거나 `isOpen`이 `false`가 되면 리스너를 정리합니다. `ModalBackdrop` 컴포넌트의 `onClick` 이벤트 핸들러에서 `onClose()`를 호출합니다. `ModalContent`에서 발생하는 클릭 이벤트가 Backdrop으로 전파되지 않도록 `e.stopPropagation()`을 사용합니다.",
         "testStrategy": "모달이 열린 상태에서 ESC 키를 눌렀을 때 `onClose` 액션이 호출되고 모달이 닫히는지 확인합니다. 모달의 어두운 배경(Backdrop)을 클릭했을 때 모달이 닫히는지 확인합니다. 모달 콘텐츠 영역을 클릭했을 때는 모달이 닫히지 않는지 확인합니다.",
         "priority": "high",
-        "dependencies": [
-          "9"
-        ],
+        "dependencies": ["9"],
         "status": "done",
         "subtasks": [],
         "complexity": 3,
@@ -345,10 +306,8 @@
         "details": "모달이 열릴 때(`useEffect`), 모달 컨테이너(`ModalContent`) 내부에서 포커스 가능한 모든 요소(`a[href], button, input, textarea, select, details, [tabindex]:not([tabindex='-1'])`)를 조회합니다. `keydown` 이벤트 리스너를 추가하여 `Tab` 키 입력을 감지합니다. Shift 키와 함께 Tab을 누르면 역방향으로, Tab만 누르면 정방향으로 포커스를 이동시킵니다. 첫 번째 요소에서 역방향으로 이동 시 마지막 요소로, 마지막 요소에서 정방향 이동 시 첫 번째 요소로 포커스를 옮깁니다. 이 로직을 `useFocusTrap` 훅으로 분리하여 재사용성을 높입니다.",
         "testStrategy": "모달 내부에 여러 개의 버튼이나 입력 필드를 배치합니다. 모달이 열렸을 때 Tab 키를 반복해서 눌러 포커스가 모달 외부로 벗어나지 않고 내부 요소들 사이에서만 순환하는지 확인합니다. Shift + Tab을 눌러 역방향 순환도 테스트합니다.",
         "priority": "high",
-        "dependencies": [
-          "10"
-        ],
-        "status": "pending",
+        "dependencies": ["10"],
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -356,7 +315,7 @@
             "description": "모달 컨테이너 내에서 포커스를 받을 수 있는 모든 HTML 요소를 조회하는 유틸리티 함수를 구현합니다. 이 함수는 Focus Trap 로직의 기반이 됩니다.",
             "dependencies": [],
             "details": "컨테이너 DOM 요소를 인자로 받아, `querySelectorAll`을 사용하여 `a[href], button, input, textarea, select, details, [tabindex]:not([tabindex='-1'])` 셀렉터로 모든 포커스 가능 요소를 찾아 배열로 반환하는 함수를 작성합니다.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "테스트용 div 내부에 여러 포커스 가능 요소(버튼, 링크 등)와 불가능한 요소(일반 div)를 섞어 넣고, 함수가 정확히 포커스 가능한 요소 목록만 반환하는지 유닛 테스트로 검증합니다.",
             "parentId": "undefined"
           },
@@ -364,11 +323,9 @@
             "id": 2,
             "title": "Tab 키 이벤트 기반 정방향 포커스 순환 로직 구현",
             "description": "사용자가 'Tab' 키를 눌렀을 때, 포커스가 모달 내의 마지막 요소에 있다면 첫 번째 요소로 이동시키고, 그 외에는 기본 동작을 따르도록 하는 이벤트 핸들러 로직을 구현합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "`keydown` 이벤트 리스너 내에서, 이벤트 키가 'Tab'이고 Shift 키가 눌리지 않았는지 확인합니다. 현재 포커스된 요소가 포커스 가능 요소 목록의 마지막 요소일 경우, `event.preventDefault()`를 호출하고 목록의 첫 번째 요소에 `.focus()`를 수동으로 호출합니다.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "모달 내에서 마지막 포커스 가능 요소에 포커스가 있을 때 Tab 키를 누르면, 포커스가 모달 내의 첫 번째 요소로 이동하는지 수동으로 테스트합니다.",
             "parentId": "undefined"
           },
@@ -376,11 +333,9 @@
             "id": 3,
             "title": "Shift+Tab 키 이벤트 기반 역방향 포커스 순환 로직 구현",
             "description": "사용자가 'Shift + Tab' 키를 눌렀을 때, 포커스가 모달 내의 첫 번째 요소에 있다면 마지막 요소로 이동시키고, 그 외에는 기본 동작을 따르도록 하는 이벤트 핸들러 로직을 구현합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "`keydown` 이벤트 리스너 로직을 확장하여, 이벤트 키가 'Tab'이고 Shift 키가 함께 눌렸는지 확인합니다. 현재 포커스된 요소가 포커스 가능 요소 목록의 첫 번째 요소일 경우, `event.preventDefault()`를 호출하고 목록의 마지막 요소에 `.focus()`를 수동으로 호출합니다.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "모달 내에서 첫 번째 포커스 가능 요소에 포커스가 있을 때 Shift+Tab 키를 누르면, 포커스가 모달 내의 마지막 요소로 이동하는지 수동으로 테스트합니다.",
             "parentId": "undefined"
           },
@@ -388,20 +343,17 @@
             "id": 4,
             "title": "포커스 트랩 로직을 `useFocusTrap` 커스텀 훅으로 캡슐화",
             "description": "이전에 구현된 포커스 가능 요소 조회, 정방향 및 역방향 포커스 순환 로직을 모두 통합하여 재사용 가능한 `useFocusTrap` 커스텀 훅으로 만듭니다.",
-            "dependencies": [
-              1,
-              2,
-              3
-            ],
+            "dependencies": [1, 2, 3],
             "details": "`useFocusTrap` 훅은 모달 컨테이너의 `ref`와 모달의 열림 상태(`isOpen`)를 인자로 받습니다. `useEffect`를 사용하여 `isOpen`이 `true`일 때 `keydown` 이벤트 리스너를 등록하고, `false`가 되거나 언마운트될 때 리스너를 제거합니다. 이 훅 내부에서 포커스 순환 로직 전체를 관리합니다.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "`useFocusTrap` 훅을 실제 Modal 컴포넌트에 적용합니다. Storybook이나 테스트 페이지에서 모달을 열고 Tab, Shift+Tab을 반복적으로 눌러 포커스가 모달 밖으로 절대 나가지 않고 내부에서만 완벽하게 순환하는지 종합적으로 테스트합니다.",
             "parentId": "undefined"
           }
         ],
         "complexity": 8,
         "recommendedSubtasks": 4,
-        "expansionPrompt": "모달 내에서 포커스 가능한 모든 요소를 조회하는 유틸리티 함수 구현, Tab 키 이벤트(정방향)를 가로채 포커스를 순환시키는 로직 구현, Shift+Tab 키 이벤트(역방향)를 가로채 포커스를 순환시키는 로직 구현, 이 로직들을 `useFocusTrap` 커스텀 훅으로 캡슐화하는 작업으로 분리해 주세요."
+        "expansionPrompt": "모달 내에서 포커스 가능한 모든 요소를 조회하는 유틸리티 함수 구현, Tab 키 이벤트(정방향)를 가로채 포커스를 순환시키는 로직 구현, Shift+Tab 키 이벤트(역방향)를 가로채 포커스를 순환시키는 로직 구현, 이 로직들을 `useFocusTrap` 커스텀 훅으로 캡슐화하는 작업으로 분리해 주세요.",
+        "updatedAt": "2025-11-21T11:40:05.711Z"
       },
       {
         "id": "12",
@@ -410,9 +362,7 @@
         "details": "`useEffect`를 사용하여 `isOpen`이 `true`로 변경될 때 `document.activeElement`를 저장해 둡니다. 그 후 모달 내부의 첫 번째 포커스 가능한 요소를 찾아 `element.focus()`를 호출합니다. 모달이 닫힐 때(`isOpen`이 `false`로 변경되거나 언마운트될 때) 저장해 둔 이전 포커스 요소로 `savedElement.focus()`를 호출하여 포커스를 복원합니다.",
         "testStrategy": "버튼을 클릭하여 모달을 엽니다. 모달이 열리면 포커스가 자동으로 모달 내부의 첫 번째 요소(예: 닫기 버튼)로 이동하는지 확인합니다. 모달을 닫았을 때 포커스가 모달을 열었던 원래 버튼으로 돌아오는지 확인합니다.",
         "priority": "high",
-        "dependencies": [
-          "11"
-        ],
+        "dependencies": ["11"],
         "status": "pending",
         "subtasks": [
           {
@@ -429,9 +379,7 @@
             "id": 2,
             "title": "모달 열릴 때 내부 첫 번째 요소로 포커스 이동 로직 구현",
             "description": "모달이 열리면, 모달 컨테이너 내부에서 포커스를 받을 수 있는 첫 번째 요소를 찾아 그 요소로 포커스를 즉시 이동시킵니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "모달 컨테이너의 ref를 사용하여 내부 DOM에 접근합니다. 포커스 가능한 요소(예: 'a[href]', 'button', 'input', '[tabindex]:not([tabindex=\"-1\"])')를 쿼리 셀렉터로 찾은 후, 첫 번째 요소에 .focus() 메소드를 호출합니다.",
             "status": "pending",
             "testStrategy": "모달이 열렸을 때, 포커스가 모달 내의 첫 번째 버튼이나 입력 필드로 자동으로 이동하는지 눈으로 확인하고, document.activeElement가 해당 요소인지 개발자 도구 콘솔에서 확인합니다.",
@@ -441,9 +389,7 @@
             "id": 3,
             "title": "모달 닫힐 때 이전 요소로 포커스 복원 로직 구현",
             "description": "모달이 닫힐 때(언마운트되거나 isOpen이 false가 될 때), 이전에 저장해 두었던 요소로 포커스를 되돌려주는 기능을 구현합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "useEffect의 cleanup 함수 또는 isOpen이 false로 변하는 시점을 감지하는 로직에서, 1번 작업에서 저장해 둔 HTMLElement 참조를 가져옵니다. 해당 요소가 여전히 DOM에 존재하면, .focus() 메소드를 호출하여 포커스를 복원합니다.",
             "status": "pending",
             "testStrategy": "모달을 열고 닫은 후, 포커스가 모달을 열기 위해 클릭했던 원래 버튼으로 돌아왔는지 확인합니다. document.activeElement가 원래 버튼과 일치하는지 개발자 도구 콘솔에서 검증합니다.",
@@ -461,9 +407,7 @@
         "details": "`ModalContent` 요소에 `role='dialog'`와 `aria-modal='true'` 속성을 적용합니다. 모달의 제목을 나타내는 요소(예: `ModalHeader`의 `h2` 태그)에 `id`를 부여하고, `ModalContent`에 `aria-labelledby` 속성으로 해당 `id`를 연결합니다. 모달 본문 내용에 대한 설명이 필요할 경우, 본문 컨테이너에 `id`를 부여하고 `aria-describedby`로 연결할 수 있습니다.",
         "testStrategy": "브라우저 개발자 도구에서 모달 컨테이너에 `role='dialog'`, `aria-modal='true'`, `aria-labelledby` 등의 속성이 올바르게 적용되었는지 확인합니다. 스크린 리더로 모달이 열렸을 때 \"다이얼로그\"라고 알려주고, 모달 제목을 읽어주는지 확인합니다.",
         "priority": "high",
-        "dependencies": [
-          "12"
-        ],
+        "dependencies": ["12"],
         "status": "pending",
         "subtasks": [],
         "complexity": 4,
@@ -477,9 +421,7 @@
         "details": "`Modal.stories.tsx` 파일을 생성합니다. `useState`를 사용하여 모달의 `isOpen` 상태를 관리하는 Wrapper 컴포넌트를 만들어 스토리를 작성합니다.\n- **Default**: 기본 모달 사용 예제 스토리.\n- **LongContent**: 본문 내용이 길어져 스크롤이 생기는 경우를 테스트하는 스토리.\n- **CustomCloseOptions**: `closeOnBackdropClick`과 `closeOnEsc`를 `false`로 설정하여 닫기 동작을 제어하는 예제 스토리. Storybook의 `args`와 `argTypes`를 사용하여 `title`, `closeOnBackdropClick` 등의 props를 동적으로 제어할 수 있도록 합니다.",
         "testStrategy": "Storybook에서 버튼을 클릭하여 모달을 열고 닫는 기본 동작을 확인합니다. Controls 패널에서 props를 변경하며 각 옵션(예: backdrop 클릭으로 닫기 비활성화)이 정상적으로 작동하는지 테스트합니다.",
         "priority": "medium",
-        "dependencies": [
-          "13"
-        ],
+        "dependencies": ["13"],
         "status": "pending",
         "subtasks": [],
         "complexity": 3,
@@ -493,9 +435,7 @@
         "details": "`SelectOption` 타입 정의에 `disabled?: boolean`을 추가합니다. 옵션을 렌더링할 때 `option.disabled`가 `true`이면 해당 `SelectOption` 요소에 `aria-disabled='true'` 속성과 비활성화 스타일(예: `text-gray-400`, `cursor-not-allowed`)을 적용합니다. 키보드 네비게이션 로직을 수정하여 비활성화된 옵션은 건너뛰도록 인덱스 계산 부분을 변경합니다. 클릭 이벤트 핸들러에서도 `option.disabled`가 `true`이면 `onChange`가 호출되지 않도록 방어 코드를 추가합니다.",
         "testStrategy": "Storybook에 일부 옵션이 비활성화된 Select 컴포넌트 스토리를 추가합니다. 비활성화된 옵션이 시각적으로 다르게 표시되는지 확인합니다. 해당 옵션에 마우스를 올려도 클릭할 수 없고, 키보드 화살표로 탐색할 때 건너뛰는지 확인합니다.",
         "priority": "low",
-        "dependencies": [
-          "8"
-        ],
+        "dependencies": ["8"],
         "status": "pending",
         "subtasks": [
           {
@@ -512,9 +452,7 @@
             "id": 2,
             "title": "비활성화된 옵션 클릭 시 이벤트 처리 방어 로직 추가",
             "description": "사용자가 비활성화된 옵션을 마우스로 클릭하더라도, 값이 변경되지 않도록 클릭 이벤트 핸들러에 방어 코드를 추가합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "옵션 클릭을 처리하는 함수(예: `handleOptionClick`)의 시작 부분에 `if (option.disabled) return;` 과 같은 가드 구문을 추가하여, `onChange` 콜백이 호출되거나 팝업이 닫히는 등의 후속 동작이 실행되지 않도록 합니다.",
             "status": "pending",
             "testStrategy": "Storybook에서 비활성화된 옵션을 클릭했을 때, Select의 값이 변경되지 않고 팝업이 닫히지 않는 것을 확인합니다. `onChange` 핸들러에 로그를 추가하여 호출되지 않음을 검증합니다.",
@@ -524,9 +462,7 @@
             "id": 3,
             "title": "키보드 네비게이션 시 비활성화된 옵션 건너뛰기 로직 수정",
             "description": "키보드 화살표 키로 옵션 목록을 탐색할 때, 비활성화된 옵션은 건너뛰고 다음/이전 활성화된 옵션으로 포커스(하이라이트)가 이동하도록 로직을 수정합니다.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "키보드 `ArrowUp`, `ArrowDown` 이벤트 핸들러 내부의 다음 인덱스를 계산하는 로직을 수정합니다. 다음 인덱스에 해당하는 옵션이 `disabled: true`일 경우, 활성화된 옵션을 찾을 때까지 인덱스를 계속해서 증감시키는 로직을 추가합니다.",
             "status": "pending",
             "testStrategy": "비활성화된 옵션이 중간에 포함된 Select 목록을 키보드 화살표 키로 탐색합니다. 하이라이트가 비활성화된 옵션을 건너뛰고 다음/이전의 활성화된 옵션으로 직접 이동하는지 확인합니다.",
@@ -540,12 +476,10 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-21T11:28:23.374Z",
+      "lastModified": "2025-11-21T11:40:05.712Z",
       "taskCount": 15,
-      "completedCount": 10,
-      "tags": [
-        "master"
-      ]
+      "completedCount": 11,
+      "tags": ["master"]
     }
   }
 }

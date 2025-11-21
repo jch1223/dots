@@ -20,3 +20,7 @@ export interface ModalContextValue {
   isOpen: boolean;
   onClose: () => void;
 }
+
+export interface ModalCloseProps extends React.ComponentPropsWithoutRef<'button'> {
+  children: React.ReactNode;
+}

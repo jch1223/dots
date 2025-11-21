@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Modal, ModalBackdrop, ModalContent } from './Modal';
+import { Modal, ModalClose, ModalContent } from './Modal';
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
@@ -13,7 +13,7 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     children: {
-      description: 'Modal 내부 콘텐츠 (ModalBackdrop, ModalContent 등)',
+      description: 'Modal 내부 콘텐츠 (ModalContent, ModalClose)',
     },
   },
 } satisfies Meta<typeof Modal>;
@@ -45,13 +45,12 @@ export const Default: Story = {
     onClose: () => {},
     children: (
       <>
-        <ModalBackdrop />
         <ModalContent>
           <h2 className="mb-4 text-xl font-bold">Modal Title</h2>
           <p className="mb-4 text-gray-600">
             This is a modal dialog. Click the backdrop or the close button to close it.
           </p>
-          <button className="rounded bg-gray-200 px-4 py-2 hover:bg-gray-300">Close</button>
+          <ModalClose className="rounded bg-gray-200 px-4 py-2 hover:bg-gray-300">Close</ModalClose>
         </ModalContent>
       </>
     ),
@@ -82,7 +81,6 @@ export const LargeModal: Story = {
     onClose: () => {},
     children: (
       <>
-        <ModalBackdrop />
         <ModalContent className="max-w-2xl">
           <h2 className="mb-4 text-2xl font-bold">Large Modal</h2>
           <div className="mb-4 text-gray-600">
@@ -100,10 +98,12 @@ export const LargeModal: Story = {
             </p>
           </div>
           <div className="flex justify-end gap-2">
-            <button className="rounded bg-gray-200 px-4 py-2 hover:bg-gray-300">Cancel</button>
-            <button className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+            <ModalClose className="rounded bg-gray-200 px-4 py-2 hover:bg-gray-300">
+              close
+            </ModalClose>
+            <ModalClose className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
               Confirm
-            </button>
+            </ModalClose>
           </div>
         </ModalContent>
       </>

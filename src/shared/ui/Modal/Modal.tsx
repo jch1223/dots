@@ -1,28 +1,58 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { ModalContext } from './model/ModalContext';
+import { useModal } from './model/useModal';
 
-import type { ModalBackdropProps, ModalContentProps, ModalProps } from './model/types';
+import type {
+  ModalBackdropProps,
+  ModalCloseProps,
+  ModalContentProps,
+  ModalProps,
+} from './model/types';
 
 export function Modal({ isOpen, onClose, children }: ModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      // 모달이 열릴 때 포커스를 모달 래퍼로 이동
+      modalRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      onClose();
       return;
     }
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
+    if (event.key === 'Tab') {
+      const focusableElements = modalRef.current?.querySelectorAll(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+      );
+
+      if (!focusableElements || focusableElements.length === 0) {
+        event.preventDefault();
+        return;
       }
-    };
 
-    window.addEventListener('keydown', handleKeyDown);
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          event.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
+  };
 
   if (!isOpen) {
     return null;
@@ -35,16 +65,26 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 
   return createPortal(
     <ModalContext.Provider value={contextValue}>
-      <div onClick={onClose}>{children}</div>
+      <ModalBackdrop />
+      <div
+        ref={modalRef}
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
+        className="fixed inset-0 z-50 flex items-center justify-center outline-none"
+      >
+        {children}
+      </div>
     </ModalContext.Provider>,
     document.body,
   );
 }
 
-export function ModalBackdrop({ onClick, className = '' }: ModalBackdropProps) {
+function ModalBackdrop({ className = '' }: ModalBackdropProps) {
+  const { onClose } = useModal();
+
   const baseStyles = 'fixed inset-0 bg-black/50 z-40';
 
-  return <div className={`${baseStyles} ${className}`} onClick={onClick} aria-hidden="true" />;
+  return <div className={`${baseStyles} ${className}`} onClick={onClose} aria-hidden="true" />;
 }
 
 export function ModalContent({ children, className = '' }: ModalContentProps) {
@@ -58,19 +98,21 @@ export function ModalContent({ children, className = '' }: ModalContentProps) {
     };
   }, []);
 
-  const handleClick = (event: React.MouseEvent) => {
-    // 모달 콘텐츠 클릭 시 이벤트 전파를 막아 Backdrop 클릭으로 간주되지 않도록 함
-    event.stopPropagation();
-  };
+  return (
+    <>
+      <div className={`${baseStyles} ${className}`} role="dialog" aria-modal="true">
+        {children}
+      </div>
+    </>
+  );
+}
+
+export function ModalClose({ className = '', children }: ModalCloseProps) {
+  const { onClose } = useModal();
 
   return (
-    <div
-      className={`${baseStyles} ${className}`}
-      role="dialog"
-      aria-modal="true"
-      onClick={handleClick}
-    >
+    <button type="button" onClick={onClose} className={className}>
       {children}
-    </div>
+    </button>
   );
 }
