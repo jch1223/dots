@@ -71,12 +71,13 @@ const DefaultSelect: Story['render'] = (args) => {
           />
           <SelectPopup className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
             <SelectList className="max-h-60 overflow-auto py-1">
-              {typedArgs.options.map((option) => (
+              {typedArgs.options.map((option, index) => (
                 <SelectOption
                   key={option.value}
                   option={option}
                   disabled={option.disabled}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  index={index}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
               ))}
             </SelectList>
@@ -225,28 +226,34 @@ const GroupSelect: Story['render'] = (args) => {
               <SelectGroup label="과일">
                 <SelectOption
                   option={{ value: 'apple', label: '사과' }}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  index={0}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
                 <SelectOption
                   option={{ value: 'banana', label: '바나나' }}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  index={1}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
                 <SelectOption
                   option={{ value: 'orange', label: '오렌지' }}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  index={2}
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
               </SelectGroup>
               <SelectGroup label="채소">
                 <SelectOption
                   option={{ value: 'carrot', label: '당근' }}
+                  index={3}
                   className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
                 <SelectOption
                   option={{ value: 'tomato', label: '토마토' }}
+                  index={4}
                   className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
                 <SelectOption
                   option={{ value: 'lettuce', label: '상추' }}
+                  index={5}
                   className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
               </SelectGroup>

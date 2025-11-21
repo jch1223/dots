@@ -17,6 +17,8 @@ export interface SelectContextValue<T = string | number> {
   triggerId?: string;
   setTriggerId?: (id: string) => void;
   listboxId: string;
+  highlightedIndex: number;
+  setHighlightedIndex: (index: number) => void;
 }
 
 export interface SelectProps<T = string | number> {
@@ -47,6 +49,7 @@ export interface SelectListProps extends ComponentPropsWithoutRef<'ul'> {
 export interface SelectOptionProps<T = string | number> extends ComponentPropsWithoutRef<'li'> {
   option: SelectOptionType<T>;
   disabled?: boolean;
+  index?: number;
 }
 export interface SelectGroupProps extends ComponentPropsWithoutRef<'li'> {
   label: string;
