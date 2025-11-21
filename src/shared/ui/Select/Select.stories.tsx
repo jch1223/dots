@@ -77,7 +77,7 @@ const DefaultSelect: Story['render'] = (args) => {
                   option={option}
                   disabled={option.disabled}
                   index={index}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600 data-[selected=true]:data-[highlighted=true]:bg-blue-100"
                 />
               ))}
             </SelectList>
@@ -227,17 +227,17 @@ const GroupSelect: Story['render'] = (args) => {
                 <SelectOption
                   option={{ value: 'apple', label: '사과' }}
                   index={0}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className="data-[selected=true][data-highlighted=true]:bg-[rgba(107,114,128,0.15)] cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
                 <SelectOption
                   option={{ value: 'banana', label: '바나나' }}
                   index={1}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className="data-[selected=true][data-highlighted=true]:bg-[rgba(107,114,128,0.15)] cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
                 <SelectOption
                   option={{ value: 'orange', label: '오렌지' }}
                   index={2}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-200 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
+                  className="data-[selected=true][data-highlighted=true]:bg-[rgba(107,114,128,0.15)] cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[highlighted=true]:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-600"
                 />
               </SelectGroup>
               <SelectGroup label="채소">
