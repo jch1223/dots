@@ -36,7 +36,7 @@ describe('Modal 컴포넌트', () => {
 
     render(
       <Modal isOpen={true} onClose={handleClose}>
-        <ModalBackdrop onClick={handleClose} />
+        <ModalBackdrop />
         <ModalContent>
           <div>Modal Content</div>
         </ModalContent>
@@ -48,6 +48,42 @@ describe('Modal 컴포넌트', () => {
       await user.click(backdrop);
       expect(handleClose).toHaveBeenCalledTimes(1);
     }
+  });
+
+  it('Escape 키를 눌렀을 때 onClose를 호출한다', async () => {
+    const user = userEvent.setup();
+    const handleClose = vi.fn();
+
+    render(
+      <Modal isOpen={true} onClose={handleClose}>
+        <ModalContent>
+          <div>Modal Content</div>
+        </ModalContent>
+      </Modal>,
+    );
+
+    await user.keyboard('{Escape}');
+    expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('모달 콘텐츠 영역을 클릭했을 때 onClose가 호출되지 않는다', async () => {
+    const user = userEvent.setup();
+    const handleClose = vi.fn();
+
+    render(
+      <Modal isOpen={true} onClose={handleClose}>
+        <ModalBackdrop />
+        <ModalContent>
+          <div>Modal Content</div>
+        </ModalContent>
+      </Modal>,
+    );
+
+    const modalContent = screen.getByRole('dialog');
+    await user.click(modalContent);
+
+    // 모달 콘텐츠 클릭 시 stopPropagation으로 이벤트 전파가 막혀 onClose가 호출되지 않아야 함
+    expect(handleClose).not.toHaveBeenCalled();
   });
 
   it('모달이 열려있을 때 body 스크롤을 방지한다', () => {

@@ -6,6 +6,24 @@ import { ModalContext } from './model/ModalContext';
 import type { ModalBackdropProps, ModalContentProps, ModalProps } from './model/types';
 
 export function Modal({ isOpen, onClose, children }: ModalProps) {
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) {
     return null;
   }
@@ -16,7 +34,9 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
   };
 
   return createPortal(
-    <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>,
+    <ModalContext.Provider value={contextValue}>
+      <div onClick={onClose}>{children}</div>
+    </ModalContext.Provider>,
     document.body,
   );
 }
@@ -38,8 +58,18 @@ export function ModalContent({ children, className = '' }: ModalContentProps) {
     };
   }, []);
 
+  const handleClick = (event: React.MouseEvent) => {
+    // 모달 콘텐츠 클릭 시 이벤트 전파를 막아 Backdrop 클릭으로 간주되지 않도록 함
+    event.stopPropagation();
+  };
+
   return (
-    <div className={`${baseStyles} ${className}`} role="dialog" aria-modal="true">
+    <div
+      className={`${baseStyles} ${className}`}
+      role="dialog"
+      aria-modal="true"
+      onClick={handleClick}
+    >
       {children}
     </div>
   );
