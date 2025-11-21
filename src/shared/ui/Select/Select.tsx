@@ -20,6 +20,8 @@ import type {
   SelectTriggerProps,
 } from './model/types';
 
+const NO_HIGHLIGHT = -1;
+
 export function Select<T = string | number>({
   value,
   onChange,
@@ -28,7 +30,7 @@ export function Select<T = string | number>({
   children,
 }: SelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [highlightedIndex, setHighlightedIndex] = useState(NO_HIGHLIGHT);
   const defaultTriggerId = useId();
   const listboxId = useId();
   const [actualTriggerId, setActualTriggerId] = useState<string>(defaultTriggerId);
@@ -125,7 +127,7 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
         } else {
           // 리스트가 이미 열려있으면 하이라이트 이동
           const nextIndex = getNextEnabledIndex(options, highlightedIndex, 'next');
-          if (nextIndex !== -1) {
+          if (nextIndex !== NO_HIGHLIGHT) {
             setHighlightedIndex(nextIndex);
           }
         }
@@ -139,7 +141,7 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
         } else {
           // 리스트가 이미 열려있으면 하이라이트 이동
           const prevIndex = getNextEnabledIndex(options, highlightedIndex, 'prev');
-          if (prevIndex !== -1) {
+          if (prevIndex !== NO_HIGHLIGHT) {
             setHighlightedIndex(prevIndex);
           }
         }
@@ -149,7 +151,7 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
         if (isOpen) {
           e.preventDefault();
           setIsOpen(false);
-          setHighlightedIndex(-1);
+          setHighlightedIndex(NO_HIGHLIGHT);
         }
         break;
     }
@@ -219,7 +221,7 @@ export function SelectList({ children, ...props }: SelectListProps) {
     switch (event.key) {
       case 'ArrowDown': {
         const nextIndex = getNextEnabledIndex(options, highlightedIndex, 'next');
-        if (nextIndex !== -1) {
+        if (nextIndex !== NO_HIGHLIGHT) {
           setHighlightedIndex(nextIndex);
         }
         break;
@@ -227,7 +229,7 @@ export function SelectList({ children, ...props }: SelectListProps) {
 
       case 'ArrowUp': {
         const prevIndex = getNextEnabledIndex(options, highlightedIndex, 'prev');
-        if (prevIndex !== -1) {
+        if (prevIndex !== NO_HIGHLIGHT) {
           setHighlightedIndex(prevIndex);
         }
         break;
@@ -257,7 +259,7 @@ export function SelectList({ children, ...props }: SelectListProps) {
             if (!selectedOption.disabled) {
               onChange?.(selectedOption);
               setIsOpen(false);
-              setHighlightedIndex(-1);
+              setHighlightedIndex(NO_HIGHLIGHT);
             }
           }
         }
@@ -266,7 +268,7 @@ export function SelectList({ children, ...props }: SelectListProps) {
 
       case 'Escape':
         setIsOpen(false);
-        setHighlightedIndex(-1);
+        setHighlightedIndex(NO_HIGHLIGHT);
         break;
     }
   };
@@ -325,20 +327,22 @@ export function SelectGroup({ label, children, className, ...props }: SelectGrou
 export function SelectOption({ option, onClick, disabled, index, ...props }: SelectOptionProps) {
   const { value, onChange, setIsOpen, highlightedIndex, setHighlightedIndex } = useSelect();
 
+  const isOptionDisabled = disabled || option.disabled;
+
   const handleClick = (event: React.MouseEvent<HTMLLIElement>) => {
-    if (disabled || option.disabled) {
+    if (isOptionDisabled) {
       event.preventDefault();
       return;
     }
 
     onChange?.(option);
     setIsOpen(false);
-    setHighlightedIndex(-1);
+    setHighlightedIndex(NO_HIGHLIGHT);
     onClick?.(event);
   };
 
   const handleMouseEnter = () => {
-    if (!disabled && !option.disabled && index !== undefined) {
+    if (!isOptionDisabled && index !== undefined) {
       setHighlightedIndex(index);
     }
   };
@@ -352,8 +356,8 @@ export function SelectOption({ option, onClick, disabled, index, ...props }: Sel
       onMouseEnter={handleMouseEnter}
       data-selected={isSelected}
       data-highlighted={isHighlighted}
-      data-disabled={disabled || option.disabled ? 'true' : undefined}
-      aria-disabled={disabled || option.disabled}
+      data-disabled={isOptionDisabled ? 'true' : undefined}
+      aria-disabled={isOptionDisabled}
       role="option"
       aria-selected={isSelected}
       {...props}
