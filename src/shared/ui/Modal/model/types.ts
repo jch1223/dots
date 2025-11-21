@@ -4,6 +4,8 @@ export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
+  closeOnBackdropClick?: boolean;
+  closeOnEsc?: boolean;
 }
 
 export interface ModalBackdropProps {
@@ -19,6 +21,8 @@ export interface ModalContentProps {
 export interface ModalContextValue {
   isOpen: boolean;
   onClose: () => void;
+  closeOnBackdropClick?: boolean;
+  closeOnEsc?: boolean;
 }
 
 export interface ModalCloseProps extends React.ComponentPropsWithoutRef<'button'> {

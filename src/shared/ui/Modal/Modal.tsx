@@ -11,7 +11,13 @@ import type {
   ModalProps,
 } from './model/types';
 
-export function Modal({ isOpen, onClose, children }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  children,
+  closeOnBackdropClick = true,
+  closeOnEsc = true,
+}: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
 
@@ -45,7 +51,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
   }, [isOpen]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' && closeOnEsc) {
       onClose();
       return;
     }
@@ -84,6 +90,8 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
   const contextValue = {
     isOpen,
     onClose,
+    closeOnBackdropClick,
+    closeOnEsc,
   };
 
   return createPortal(
@@ -103,11 +111,17 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 }
 
 function ModalBackdrop({ className = '' }: ModalBackdropProps) {
-  const { onClose } = useModal();
+  const { onClose, closeOnBackdropClick = true } = useModal();
 
   const baseStyles = 'fixed inset-0 bg-black/50 z-40';
 
-  return <div className={`${baseStyles} ${className}`} onClick={onClose} aria-hidden="true" />;
+  const handleClick = () => {
+    if (closeOnBackdropClick) {
+      onClose();
+    }
+  };
+
+  return <div className={`${baseStyles} ${className}`} onClick={handleClick} aria-hidden="true" />;
 }
 
 export function ModalContent({ children, className = '' }: ModalContentProps) {
