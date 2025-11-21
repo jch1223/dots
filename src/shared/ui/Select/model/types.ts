@@ -12,16 +12,17 @@ export interface SelectContextValue<T = string | number> {
   setIsOpen: (open: boolean) => void;
   value?: SelectOptionType<T>;
   onChange?: (option: SelectOptionType<T>) => void;
-  options: SelectOptionType<T>[];
   disabled?: boolean;
   triggerId?: string;
   setTriggerId?: (id: string) => void;
+  listboxId: string;
+  highlightedId: string | null;
+  setHighlightedId: (id: string | null) => void;
 }
 
 export interface SelectProps<T = string | number> {
   value?: SelectOptionType<T>;
   onChange?: (option: SelectOptionType<T>) => void;
-  options: SelectOptionType<T>[];
   label?: string;
   placeholder?: string;
   disabled?: boolean;
@@ -41,7 +42,7 @@ export interface SelectPopupProps extends ComponentPropsWithoutRef<'div'> {
 }
 
 export interface SelectListProps extends ComponentPropsWithoutRef<'ul'> {
-  children?: ReactNode;
+  children: ReactNode;
 }
 export interface SelectOptionProps<T = string | number> extends ComponentPropsWithoutRef<'li'> {
   option: SelectOptionType<T>;

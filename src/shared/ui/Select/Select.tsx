@@ -1,8 +1,9 @@
-import React, { useId, useState } from 'react';
+import React, { type ComponentPropsWithoutRef, useEffect, useId, useRef, useState } from 'react';
 
 import { compareValue } from './lib/compareValue';
 import { SelectContext } from './model/SelectContext';
 import { useSelect } from './model/useSelect';
+import { useOutsideClick } from '../../hooks/useClickOutside';
 
 import type {
   SelectContextValue,
@@ -15,15 +16,18 @@ import type {
   SelectTriggerProps,
 } from './model/types';
 
+const NO_HIGHLIGHT = null;
+
 export function Select<T = string | number>({
   value,
   onChange,
-  options,
   disabled,
   children,
 }: SelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedId, setHighlightedId] = useState<string | null>(NO_HIGHLIGHT);
   const defaultTriggerId = useId();
+  const listboxId = useId();
   const [actualTriggerId, setActualTriggerId] = useState<string>(defaultTriggerId);
 
   const contextValue: SelectContextValue<T> = {
@@ -31,10 +35,12 @@ export function Select<T = string | number>({
     setIsOpen,
     value,
     onChange,
-    options,
     disabled,
     triggerId: actualTriggerId,
     setTriggerId: setActualTriggerId,
+    listboxId,
+    highlightedId,
+    setHighlightedId,
   };
 
   return (
@@ -57,7 +63,8 @@ export function SelectLabel({ children, ...props }: SelectLabelProps) {
 
 // SelectTrigger
 export function SelectTrigger({ onClick, className, id, label, ...props }: SelectTriggerProps) {
-  const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId } = useSelect();
+  const { isOpen, setIsOpen, value, disabled, triggerId, setTriggerId, listboxId } = useSelect();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // 실제 사용되는 id 값을 계산
   const actualId = id || triggerId;
@@ -69,10 +76,40 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
     }
   }, [actualId, setTriggerId]);
 
+  // 리스트가 닫힐 때 포커스를 버튼으로 이동
+  useEffect(() => {
+    if (!isOpen && buttonRef.current) {
+      buttonRef.current.focus();
+    }
+  }, [isOpen]);
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
     setIsOpen(!isOpen);
     onClick?.(event);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (disabled) return;
+
+    switch (e.key) {
+      case 'Enter':
+      case ' ': // Space
+      case 'ArrowDown':
+      case 'ArrowUp':
+        e.preventDefault();
+        if (!isOpen) {
+          setIsOpen(true);
+        }
+        break;
+
+      case 'Escape':
+        if (isOpen) {
+          e.preventDefault();
+          setIsOpen(false);
+        }
+        break;
+    }
   };
 
   // 표시할 텍스트 결정: value가 있으면 value.label, 없으면 label prop 또는 기본값
@@ -80,10 +117,15 @@ export function SelectTrigger({ onClick, className, id, label, ...props }: Selec
 
   return (
     <button
+      ref={buttonRef}
       type="button"
       id={actualId}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       disabled={disabled}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
+      aria-controls={listboxId}
       data-state={isOpen ? 'open' : 'closed'}
       data-disabled={disabled ? 'true' : undefined}
       aria-disabled={disabled}
@@ -109,25 +151,112 @@ export function SelectPopup({ children, ...props }: SelectPopupProps) {
   return <div {...props}>{children}</div>;
 }
 
+export function SelectContainer({ children, ...props }: ComponentPropsWithoutRef<'div'>) {
+  const { setIsOpen } = useSelect();
+  const ref = useOutsideClick(() => setIsOpen(false));
+
+  return (
+    <div ref={ref} {...props}>
+      {children}
+    </div>
+  );
+}
+
 // SelectList
 export function SelectList({ children, ...props }: SelectListProps) {
-  const { options } = useSelect();
+  const { triggerId, listboxId, highlightedId, setHighlightedId, setIsOpen } = useSelect();
+  const listRef = useRef<HTMLUListElement>(null);
 
-  // children이 있으면 사용자가 직접 렌더링한 것으로 간주
-  if (children) {
-    return (
-      <ul role="listbox" {...props}>
-        {children}
-      </ul>
-    );
-  }
+  // 리스트가 열릴 때 포커스를 리스트로 이동
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.focus();
+    }
+  }, []);
 
-  // children이 없으면 options를 자동으로 렌더링
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {
+    if (!listRef.current) return;
+
+    const options = Array.from(
+      listRef.current.querySelectorAll('[role="option"]:not([aria-disabled="true"])'),
+    ) as HTMLElement[];
+
+    if (options.length === 0) return;
+
+    const currentIndex = highlightedId ? options.findIndex((opt) => opt.id === highlightedId) : -1;
+
+    switch (event.key) {
+      case 'ArrowDown': {
+        event.preventDefault();
+        const nextIndex = currentIndex + 1;
+        if (nextIndex < options.length) {
+          setHighlightedId(options[nextIndex].id);
+          options[nextIndex].scrollIntoView?.({ block: 'nearest' });
+        } else {
+          // Loop to start
+          setHighlightedId(options[0].id);
+          options[0].scrollIntoView?.({ block: 'nearest' });
+        }
+        break;
+      }
+
+      case 'ArrowUp': {
+        event.preventDefault();
+        const prevIndex = currentIndex - 1;
+        if (prevIndex >= 0) {
+          setHighlightedId(options[prevIndex].id);
+          options[prevIndex].scrollIntoView?.({ block: 'nearest' });
+        } else {
+          // Loop to end
+          setHighlightedId(options[options.length - 1].id);
+          options[options.length - 1].scrollIntoView?.({ block: 'nearest' });
+        }
+        break;
+      }
+
+      case 'Home':
+        event.preventDefault();
+        setHighlightedId(options[0].id);
+        options[0].scrollIntoView?.({ block: 'nearest' });
+        break;
+
+      case 'End':
+        event.preventDefault();
+        setHighlightedId(options[options.length - 1].id);
+        options[options.length - 1].scrollIntoView?.({ block: 'nearest' });
+        break;
+
+      case 'Enter': {
+        event.preventDefault();
+        if (highlightedId) {
+          const highlightedOption = listRef.current.querySelector(
+            `[id="${CSS.escape(highlightedId)}"]`,
+          ) as HTMLElement;
+          if (highlightedOption) {
+            highlightedOption.click();
+          }
+        }
+        break;
+      }
+
+      case 'Escape':
+        setIsOpen(false);
+        setHighlightedId(null);
+        break;
+    }
+  };
+
   return (
-    <ul role="listbox" {...props}>
-      {options.map((option) => (
-        <SelectOption key={String(option.value)} option={option} disabled={option.disabled} />
-      ))}
+    <ul
+      ref={listRef}
+      role="listbox"
+      id={listboxId}
+      aria-labelledby={triggerId}
+      tabIndex={-1}
+      onKeyDown={handleKeyDown}
+      {...props}
+    >
+      {children}
     </ul>
   );
 }
@@ -143,28 +272,43 @@ export function SelectGroup({ label, children, className, ...props }: SelectGrou
 }
 
 // SelectOption
-export function SelectOption({ option, onClick, disabled, ...props }: SelectOptionProps) {
-  const { value, onChange, setIsOpen } = useSelect();
+export function SelectOption({ option, onClick, disabled, id, ...props }: SelectOptionProps) {
+  const { value, onChange, setIsOpen, highlightedId, setHighlightedId } = useSelect();
+  const generatedId = useId();
+  const optionId = id || generatedId;
+
+  const isOptionDisabled = disabled || option.disabled;
 
   const handleClick = (event: React.MouseEvent<HTMLLIElement>) => {
-    if (disabled || option.disabled) {
+    if (isOptionDisabled) {
       event.preventDefault();
       return;
     }
 
     onChange?.(option);
     setIsOpen(false);
+    setHighlightedId(null);
     onClick?.(event);
   };
 
+  const handleMouseEnter = () => {
+    if (!isOptionDisabled) {
+      setHighlightedId(optionId);
+    }
+  };
+
   const isSelected = value !== undefined && compareValue(option.value, value.value);
+  const isHighlighted = optionId === highlightedId;
 
   return (
     <li
+      id={optionId}
       onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
       data-selected={isSelected}
-      data-disabled={disabled || option.disabled ? 'true' : undefined}
-      aria-disabled={disabled || option.disabled}
+      data-highlighted={isHighlighted}
+      data-disabled={isOptionDisabled ? 'true' : undefined}
+      aria-disabled={isOptionDisabled}
       role="option"
       aria-selected={isSelected}
       {...props}
