@@ -1,9 +1,9 @@
 import React, { type ComponentPropsWithoutRef, useEffect, useId, useRef, useState } from 'react';
 
+import { useOutsideClick } from './hooks/useClickOutside';
 import { compareValue } from './lib/compareValue';
 import { SelectContext } from './model/SelectContext';
 import { useSelect } from './model/useSelect';
-import { useOutsideClick } from '../../hooks/useClickOutside';
 
 import type {
   SelectContextValue,
