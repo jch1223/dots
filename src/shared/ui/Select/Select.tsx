@@ -66,6 +66,7 @@ export function SelectLabel({ children, ...props }: SelectLabelProps) {
 // SelectTrigger
 export function SelectTrigger({
   onClick,
+  onKeyDown,
   className,
   label,
   ...props
