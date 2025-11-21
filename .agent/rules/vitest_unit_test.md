@@ -1,6 +1,6 @@
 ---
 trigger: glob
-globs: *.test.ts, **/__tests__/**/*.ts
+globs: **/*.test.ts, **/__tests__/**/*.ts, **/*.test.tsx, **/__tests__/**/*.tsx
 ---
 
 # Persona: Vitest Testing Expert
